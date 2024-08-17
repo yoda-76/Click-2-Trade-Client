@@ -3,7 +3,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 export default function CoustomSelect(props:{options:string[], setChange:any, label:string, }) {
-  console.log("custom select rensering");
+  // console.log("custom select rensering");
   return (
     <div className="flex flex-col space-y-1.5">
                 <Label>{props.label}</Label>

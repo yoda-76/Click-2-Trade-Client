@@ -6,6 +6,7 @@ import Inputs from "../components/custom/TradePage/inputs";
 import LtpDisplay from "../components/custom/TradePage/ltpDisplay";
 import Info from "../components/custom/TradePage/info";
 import { Button } from "@/components/ui/button";
+import { useCookies } from "react-cookie";
 
 
 export default function ManageChild() {
@@ -76,6 +77,8 @@ export default function ManageChild() {
       });
   }
 
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  console.log("Sdf",cookies);
 
   return (
     <div>

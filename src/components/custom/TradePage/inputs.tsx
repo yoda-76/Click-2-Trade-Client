@@ -2,9 +2,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React from "react";
 import CoustomSelect from "../CoustomSelect";
+import { equitySymbols } from "@/lib/equity-symbols";
 
 function Inputs(props: any) {
-  console.log('props', props);
+  // console.log('props', props);
+  // console.log(equitySymbols);
   return (
     <>
       <div className="grid grid-cols-8 m-1">
@@ -14,7 +16,7 @@ function Inputs(props: any) {
           setChange={(v: any) => { console.log(v); }}
         />
         <CoustomSelect
-          options={["NIFTY", "BANKNIFTY", "FINNIFTY"]}
+          options={["NIFTY", "BANKNIFTY", "FINNIFTY",...equitySymbols]}
           label="Index"
           setChange={(v: any) => {
             props.setIndex(
@@ -22,7 +24,9 @@ function Inputs(props: any) {
                 ? { name: "NIFTY", symbol: "NSE_INDEX|Nifty 50" }
                 : v === "BANKNIFTY"
                 ? { name: "BANKNIFTY", symbol: "NSE_INDEX|Nifty Bank" }
-                : { name: "FINNIFTY", symbol: "NSE_INDEX|Nifty Fin Service" }
+                : v === "FINNIFTY"
+                ? { name: "FINNIFTY", symbol: "NSE_INDEX|Nifty Fin Service" }
+                : { name: v, symbol: `${v}` }
             );
           }}
         />
@@ -62,10 +66,15 @@ function Inputs(props: any) {
            }}
         />
         <CoustomSelect
-          options={["MARKET"]}
+          options={["MARKET", "LIMIT"]}
           label="Order Type"
           setChange={(v: any) => { props.setOrderType(v) }}
         />
+        <div className="flex-col">
+          <Label>Trigger Price</Label>
+          <Input onChange={(e: any) => props.setTriggerPrice(e.target.value)} type="number" placeholder="Trigger Price" />
+        </div>
+
         <div className="flex-col">
           <Label>Market Protection</Label>
           <Input type="number" placeholder="10%" />

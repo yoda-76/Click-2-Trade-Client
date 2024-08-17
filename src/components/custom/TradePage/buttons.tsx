@@ -18,7 +18,8 @@ export default function Buttons(props:any) {
             quantity: props.quantity,
             product: props.product,
             order_type: props.orderType,
-            transaction_type: 'SELL'
+            transaction_type: 'SELL',
+            trigger_price: props.triggerPrice
         }).then((res)=>{
           toast.success("This is a success message!");
         })
@@ -32,14 +33,24 @@ export default function Buttons(props:any) {
             quantity: props.quantity,
             product: props.product,
             order_type: props.orderType,
-            transaction_type: 'BUY'
+            transaction_type: 'BUY',
+            trigger_price: props.triggerPrice
+
         })
         }} className='w-1/2 my-1'>Buy</Button>
 
       </div>
       <div className="flex-col flex grid-cols-1 items-center">
       <Button className='my-1'>Close all positions</Button>
-      <Button className='my-1'>Cancel all orders</Button>
+      <Button className='my-1' onClick={async()=>{
+        try{axios.post('http://localhost:3000/api/cancel-all-order', {
+          account_id:props.account_id
+
+        })}catch(error){
+          console.log(error);
+        }
+      } 
+      }>Cancel all orders</Button>
       <Button className='my-1'>SL to Cost</Button>
 
       </div>
@@ -53,7 +64,10 @@ export default function Buttons(props:any) {
             quantity: props.quantity,
             product: props.product,
             order_type: props.orderType,
-            transaction_type: 'SELL'
+            transaction_type: 'SELL',
+            index:props.index,
+            trigger_price: props.triggerPrice
+
         })
         }} className='w-1/2 my-1'>Sell</Button>
       <Button onClick={async ()=>{
@@ -65,7 +79,12 @@ export default function Buttons(props:any) {
             quantity: props.quantity,
             product: props.product,
             order_type: props.orderType,
-            transaction_type: 'BUY'
+            transaction_type: 'BUY',
+            index:props.index,
+            trigger_price: props.triggerPrice,
+            price:props.putLTP
+
+
         })
           if(res){console.log("done",res);
 

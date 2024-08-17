@@ -25,20 +25,18 @@ export default function Trade() {
   const [quantity, setQuantity] = useState(0);
   const [product, setProduct] = useState("");
   const [orderType, setOrderType] = useState("");
+  const [triggerPrice, setTriggerPrice] = useState(0);
   const [accountId, setAccountId] = useState<string | null>(null);
+  const [masterAccount, setMasterAccount] = useState<any>({});
+  const [childAccounts, setChildAccounts] = useState<any[]>([]);
   const [index, setIndex] = useState<{ name: string; symbol: string }>({
     name: "NIFTY",
     symbol: "NSE_INDEX|Nifty 50",
   });
   const [indexLtp, setIndexLtp] = useState<number>(0);
 
-  // console.log("index");
-
   useEffect(() => {
-    // search for the instrument token from the optionsData
-    // const putToken = optionsData.data[index.name][`${expiry} : ${putStrike}`].PE;
-    // const callToken = optionsData.data[index.name][`${expiry} : ${callStrike}`].CE;
-    // console.log(putToken, callToken);
+    // search for the instrument token from the optionsData and update put and call key and symbol
     try {
       if (putStrike) {
         setPutKey(
@@ -64,23 +62,31 @@ export default function Trade() {
       console.log(e);
     }
   }, [index, putStrike, callStrike]);
-  useEffect(() => {
-    // console.log(callKey, putKey);
-    // console.log(callSymbol, putSymbol);
+
+  useEffect(() => { //call and put ltp are being updated if the updated ltp is not yet came fro the feed
     feed[callKey] && setCallLTP(feed[callKey]?.ff.marketFF.ltpc.cp);
     feed[putKey] && setPutLTP(feed[putKey]?.ff.marketFF.ltpc.cp);
   }, [callKey, putKey]);
+
   useEffect(() => {
-    if (!index || !optionsData.data ) return;
-    console.log(optionsData);
+    if (!index || !optionsData.data) return;
+    // console.log(optionsData);
     let tempExpiryDates: string[] = [];
     Object.keys(optionsData.data[index.name]).map((op) => {
       const result = extractExpiryAndStrike(op);
       if (!tempExpiryDates.includes(result.expiryDate))
         tempExpiryDates.push(result.expiryDate);
-      });
+    });
+    tempExpiryDates.sort((date1: string, date2: string) => new Date(date1).getTime() - new Date(date2).getTime());
     setExpiryDates(tempExpiryDates);
-    // setStrikePrices(tempStrikePrices);
+    const newIndexLtp = feed[index?.symbol]?.ff.indexFF.ltpc.ltp
+    if(newIndexLtp){
+      setIndexLtp(newIndexLtp);
+    }else{
+      // console.log("no index ltp");
+      setIndexLtp(0);
+
+    }
   }, [index]);
   useEffect(() => {
     if (!expiry || !optionsData) return;
@@ -104,7 +110,24 @@ export default function Trade() {
       const queryParameters = new URLSearchParams(location.search);
       const id = queryParameters.get("id");
       setAccountId(id);
-
+      //get all child account id
+      //get-child-account-details
+      axios
+        .post("http://localhost:3000/api/get-child-account-details", {
+          token: localStorage.getItem("token"),
+          master_id: id,
+        })
+        .then((resp) => {
+          setChildAccounts(resp.data);
+        });
+      axios
+        .post("http://localhost:3000/api/get-account-details", {
+          token: localStorage.getItem("token"),
+          id: id,
+        })
+        .then((resp) => {
+          setMasterAccount(resp.data);
+        });
       // some await functions
       if (id) {
         // For example, fetch some data with the accountId
@@ -114,6 +137,12 @@ export default function Trade() {
 
     fetchData();
   }, [location.search]);
+
+  // useEffect(() => {
+  //   console.log("childs: ",childAccounts);
+  //   console.log("master: ",masterAccount);
+
+  // },[childAccounts, masterAccount])
 
   const extractExpiryAndStrike = (
     input: string
@@ -138,6 +167,7 @@ export default function Trade() {
         let tempExpiryDates: string[] = [];
         let tempStrikePrices: number[] = [];
         Object.keys(resp.data.data[index.name]).map((op) => {
+          // console.log(op);
           const result = extractExpiryAndStrike(op);
           if (!tempExpiryDates.includes(result.expiryDate))
             tempExpiryDates.push(result.expiryDate);
@@ -146,9 +176,11 @@ export default function Trade() {
             tempStrikePrices.push(result.strikePrice);
           // tempStrikePrices.push(result.strikePrice);
         });
+        tempExpiryDates.sort((date1: string, date2: string) => new Date(date1).getTime() - new Date(date2).getTime());
+
         setExpiryDates(tempExpiryDates);
         setStrikePrices(tempStrikePrices);
-        console.log(resp.data);
+        // console.log(resp.data);
       });
 
     const socket = io(SOCKET_SERVER_URL);
@@ -177,6 +209,14 @@ export default function Trade() {
     // console.log((feed[callKey]));
   }, [feed]);
 
+  const memoizedSetChildAccounts = useCallback(
+    (value: any[]) => setChildAccounts(value),
+    []
+  );
+  const memoizedSetMasterAccount = useCallback(
+    (value: any) => setMasterAccount(value),
+    []
+  );
   const memoizedSetPutStrike = useCallback(
     (value: number) => setPutStrike(value),
     []
@@ -208,6 +248,17 @@ export default function Trade() {
     []
   );
 
+  const memoizedSetTriggerPrice = useCallback(
+    (value: number) => setTriggerPrice(value),
+    []
+  );
+  const memoizedInfoProps = useMemo(
+    () => ({
+      masterAccount,
+      childAccounts,
+    }),
+    [masterAccount, childAccounts]
+  );
   const memoizedInputsProps = useMemo(
     () => ({
       setPutStrike: memoizedSetPutStrike,
@@ -220,6 +271,7 @@ export default function Trade() {
       setProduct: memoizedSetProduct,
       setOrderType: memoizedSetOrderType,
       setQuantity: memoizedSetQuantity,
+      setTriggerPrice: memoizedSetTriggerPrice,
     }),
     [
       memoizedSetPutStrike,
@@ -232,6 +284,7 @@ export default function Trade() {
       memoizedSetProduct,
       memoizedSetOrderType,
       memoizedSetQuantity,
+      memoizedSetTriggerPrice,
     ]
   );
 
@@ -266,14 +319,14 @@ export default function Trade() {
         quantity={quantity}
         callKey={callKey}
         putKey={putKey}
+        index={index.name}
+        triggerPrice={triggerPrice}
+        callLTP={callLTP}
+        putLTP={putLTP}
       />
-      <Info />
+      <Info {...memoizedInfoProps} />
     </div>
   );
 }
 
-//1 get token for call and put selected instrument [DONE]
-//2 render their ltp [DONE]
-//3 place order [DONE]
-//4 manage child accounts
-//5 copy trade in child account
+

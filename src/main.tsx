@@ -10,7 +10,10 @@ import Login from "./page/Login.tsx";
 import Dashboard from "./page/Dashboard.tsx";
 import Trade from "./page/Trade.tsx";
 import ManageChild from "./page/ManageChild.tsx";
+import { CookiesProvider } from 'react-cookie'
+
 const router = createBrowserRouter([
+  
   {
     path: "/",
     element: (
@@ -62,6 +65,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+     <CookiesProvider>
     <RouterProvider router={router} />
+    </CookiesProvider>
   </React.StrictMode>
 );

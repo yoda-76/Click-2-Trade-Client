@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { useDispatch } from "react-redux";
 import { Router , useNavigate} from "react-router-dom";
 import { updateSessionReducer } from "../../store/reducer";
-
+import { useCookies } from "react-cookie";
 interface FormValues {
   email: string;
   password: string;
@@ -23,6 +23,7 @@ interface FormValues {
 const Login: React.FC = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(['token'])
 
   const [formValues, setFormValues] = useState<FormValues>({
     email: '',
@@ -43,6 +44,7 @@ const Login: React.FC = () => {
     console.log(formValues);
     const response =await axios.post( "http://localhost:3000/api/login",formValues)
     console.log(response)
+    setCookie("token",response.data.token)
     localStorage.setItem("token",response.data.token)
     localStorage.setItem("email",response.data.email)
     localStorage.setItem("name", response.data.name)
