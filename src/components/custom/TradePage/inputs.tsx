@@ -5,7 +5,6 @@ import CoustomSelect from "../CoustomSelect";
 import { equitySymbols } from "@/lib/equity-symbols";
 import useOrderParameterStore from "@/store/orderParameterStore";
 import useSymbolStore from "@/store/symbolStore";
-import { updateOrderBookReducer } from "@/store/orderbook-reducer";
 import useOptionsDataStore from "@/store/optionsDataStore";
 import useStaticStore from "@/store/staticStore";
 import useLtpStore from "@/store/ltpStore";
@@ -25,8 +24,8 @@ const extractExpiryAndStrike = (
   }
 };
 
-function Inputs(props: any) {
-  const {expiry, callStrike, triggerPrice, orderType, productType, updateExpiry, updateCallStrike, updatePutStrike, updateQuantity, updateOrderType, updateProductType, updateTriggerPrice, updateMarketProtection, updatePreferedStopLossPoints, updatePreferedTargetPoints}=useOrderParameterStore((state) => ({expiry:state.expiry, callStrike:state.callStrike, updateExpiry:state.updateExpiry, updateCallStrike:state.updateCallStrike, updatePutStrike:state.updatePutStrike, updateQuantity: state.updateQuantity, updateOrderType: state.updateOrderType, updateProductType: state.updateProductType, updateTriggerPrice: state.updateTriggerPrice, updateMarketProtection: state.updateMarketProtection, updatePreferedStopLossPoints: state.updatePreferedStopLossPoints, updatePreferedTargetPoints: state.updatePreferedTargetPoints, triggerPrice:state.triggerPrice, orderType:state.orderType, productType:state.productType}));
+function Inputs() {
+  const {expiry, triggerPrice, orderType, productType, updateExpiry, updateCallStrike, updatePutStrike, updateQuantity, updateOrderType, updateProductType, updateTriggerPrice}=useOrderParameterStore((state) => ({expiry:state.expiry, callStrike:state.callStrike, updateExpiry:state.updateExpiry, updateCallStrike:state.updateCallStrike, updatePutStrike:state.updatePutStrike, updateQuantity: state.updateQuantity, updateOrderType: state.updateOrderType, updateProductType: state.updateProductType, updateTriggerPrice: state.updateTriggerPrice, updateMarketProtection: state.updateMarketProtection, updatePreferedStopLossPoints: state.updatePreferedStopLossPoints, updatePreferedTargetPoints: state.updatePreferedTargetPoints, triggerPrice:state.triggerPrice, orderType:state.orderType, productType:state.productType}));
   
   const {base, updateBase, updateCall, updatePut }=useSymbolStore((state) => ({base:state.base, updateCall:state.updateCall, updatePut:state.updatePut, updateBase:state.updateBase}));
   

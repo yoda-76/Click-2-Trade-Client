@@ -1,12 +1,6 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
-import io from "socket.io-client";
+import  { useEffect, useState } from "react";
 import axios from "axios";
-import Buttons from "../components/custom/TradePage/buttons";
-import Inputs from "../components/custom/TradePage/inputs";
-import LtpDisplay from "../components/custom/TradePage/ltpDisplay";
-import Info from "../components/custom/TradePage/info";
 import { Button } from "@/components/ui/button";
-import { useCookies } from "react-cookie";
 
 
 export default function ManageChild() {

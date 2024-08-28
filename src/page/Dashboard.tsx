@@ -17,11 +17,9 @@ import { deleteSessionReducer, updateSessionReducer } from "../store/reducer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddAccount from "@/components/custom/AddAccount";
-import { useCookies } from "react-cookie";
 
 const Dashboard: React.FC = () => {
     // const [masterId, setMasterId]= useState("")
-    const [cookies, setCookie, removeCookie] = useCookies(['token']);
     const [currentActiveAccount, setCurrentActiveAccount]= useState("")
     const [addAccountToggle, setAddAccountToggle]= useState(false)
     const navigate = useNavigate()
@@ -40,8 +38,6 @@ const Dashboard: React.FC = () => {
         dispatch(updateSessionReducer(resp.data))
       })
 
-      
-      console.log("cookoe",cookies);
     },[])
 
     // console.log(details.accounts);

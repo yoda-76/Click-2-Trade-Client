@@ -1,7 +1,5 @@
 import create from 'zustand';
 
-import {devtools, persist} from 'zustand/middleware'
-import useOrderParameterStore from './orderParameterStore';
 const optionsDataStore = (set: any) => ({
     optionsData: {},
     setOptionsData: (data:any) => {

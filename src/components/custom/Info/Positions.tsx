@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function Positions() {
   const { position } = usePositionStore((state) => ({ ...state }));
-  const { sl, target, updateSl, updateTarget } = useSlStore((state) => ({
+  const { updateSl, updateTarget } = useSlStore((state) => ({
     ...state,
   }));
   

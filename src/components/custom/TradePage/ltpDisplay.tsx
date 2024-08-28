@@ -1,4 +1,4 @@
-import React from "react";
+
 import useSymbolStore from "@/store/symbolStore";
 import useLtpStore from "@/store/ltpStore";
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 import Buttons from "../components/custom/TradePage/buttons";
@@ -169,7 +169,7 @@ export default function Trade() {
       console.log("MTM SL HIT");
       axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
         account_id:master.id, account_type:"MASTER"
-      }).then((resp)=>{
+      }).then(()=>{
         updateMtmSl(0)
         updatePositions()
       })
@@ -178,7 +178,7 @@ export default function Trade() {
       console.log("MTM TARGET HIT");
       axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
         account_id:master.id, account_type:"MASTER"
-      }).then((resp)=>{
+      }).then(()=>{
         // updateMtmSl(0)
         updatePositions()
         

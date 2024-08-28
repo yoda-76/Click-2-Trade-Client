@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import React, { useState } from 'react';
 import { useDispatch } from "react-redux";
-import { Router , useNavigate} from "react-router-dom";
+import {  useNavigate} from "react-router-dom";
 import { updateSessionReducer } from "../store/reducer";
 import { useCookies } from "react-cookie";
 interface FormValues {
@@ -45,6 +45,7 @@ const Login: React.FC = () => {
     const response =await axios.post( `${import.meta.env.VITE_server_url}/api/login`,formValues)
     console.log(response)
     setCookie("token",response.data.token)
+    console.log(cookies);
     localStorage.setItem("token",response.data.token)
     localStorage.setItem("email",response.data.email)
     localStorage.setItem("name", response.data.name)
