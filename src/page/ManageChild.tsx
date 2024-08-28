@@ -60,14 +60,14 @@ export default function ManageChild() {
   const toggleActive = (id: string, status:boolean) => {
     // add try catch
     axios
-      .post("http://localhost:3000/api/toggle-active", {
+      .post(`${import.meta.env.VITE_server_url}/api/toggle-active`, {
         token: localStorage.getItem("token"),
         id: id,
         status
       })
       .then((resp) => {
         console.log(resp);
-        axios.post("http://localhost:3000/api/get-child-account-details", {token: localStorage.getItem("token"), master_id: accountId}).then((resp)=>{
+        axios.post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, {token: localStorage.getItem("token"), master_id: accountId}).then((resp)=>{
           console.log(resp);
           setChildAccounts(resp.data)
       })   
@@ -77,15 +77,15 @@ export default function ManageChild() {
       });
   }
 
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
-  console.log("Sdf",cookies);
+  // const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  // console.log("Sdf",cookies);
 
   return (
     <div>
     <div>
-      {childAccounts.map((a:any)=>{
+      {childAccounts&&childAccounts.map((a:any)=>{
         return (
-            <div className="bg-orange-500 flex justify-around"><h1>{JSON.stringify(a.id)}</h1> <h1>{JSON.stringify(a.name_tag)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=http://localhost:3000/auth&state=CHILD:${a.id}`}>Generate Token</a> <span>{a.last_token_generated_at}</span> <div className="bg-cyan-600"><Button onClick={()=>changeMultiplier(a.id, a.multiplier+1)} >+</Button>{a.multiplier}<Button onClick={()=>changeMultiplier(a.id, a.multiplier-1)} >-</Button> </div><Button className={a.active?"bg-green-600":"bg-red-600"} onClick={()=>toggleActive(a.id, !a.active)}>{!a.active?"Activate":"Deactivate"}</Button></div>
+            <div className="bg-orange-500 flex justify-around"><h1>{JSON.stringify(a.id)}</h1> <h1>{JSON.stringify(a.name_tag)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=${import.meta.env.VITE_server_url}/auth&state=CHILD:${a.id}`}>Generate Token</a> <span>{a.last_token_generated_at}</span> <div className="bg-cyan-600"><Button onClick={()=>changeMultiplier(a.id, a.multiplier+1)} >+</Button>{a.multiplier}<Button onClick={()=>changeMultiplier(a.id, a.multiplier-1)} >-</Button> </div><Button className={a.active?"bg-green-600":"bg-red-600"} onClick={()=>toggleActive(a.id, !a.active)}>{!a.active?"Activate":"Deactivate"}</Button></div>
         )
       })}
     </div> 

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   updateOrderBookReducer,
   deleteOrderBookReducer,
-} from "../store/orderbook-reducer";
+} from "./store/orderbook-reducer";
 function App() {
   const age = useSelector((state: any) => state.orderBookDetails);
   const dispatch = useDispatch();

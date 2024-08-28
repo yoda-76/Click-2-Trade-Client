@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { Provider } from "react-redux";
-import { store } from "../store/store.ts";
+import { store } from "./store/store.ts";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Register from "./page/Register.tsx";
 import Login from "./page/Login.tsx";
@@ -11,7 +11,8 @@ import Dashboard from "./page/Dashboard.tsx";
 import Trade from "./page/Trade.tsx";
 import ManageChild from "./page/ManageChild.tsx";
 import { CookiesProvider } from 'react-cookie'
-
+// import dotenv from 'dotenv'
+// dotenv.config()
 const router = createBrowserRouter([
   
   {

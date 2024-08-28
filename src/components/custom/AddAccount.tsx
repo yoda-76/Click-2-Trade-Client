@@ -54,7 +54,7 @@ export default function AddAccount() {
     // Handle form submission logic here
     console.log(formValues);
     const response = await axios.post(
-      "http://localhost:3000/api/add-account",
+      `${import.meta.env.VITE_server_url}/api/add-account`,
       formValues
     );
     console.log(response);

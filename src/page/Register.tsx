@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useState } from 'react';
 import axios from "axios";
+// import dotenv from 'dotenv'
+// dotenv.config()
 
 interface FormValues {
   name : string
@@ -46,7 +48,8 @@ const Register: React.FC = () => {
     e.preventDefault();
     // Handle form submission logic here
     console.log(formValues);
-    const response =await axios.post( "http://localhost:3000/api/register",formValues)
+
+    const response =await axios.post( `${import.meta.env.VITE_server_url}/api/register`,formValues)
     console.log(response)
      
   };

@@ -2,12 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 export default function OrderBook(props: any) {
-  // console.log("orderbook rendered", props);
+  console.log("orderbook rendered", props);
   const [orders, setOrders] = useState([]);
   useEffect(() => {
     (async () => {
       try {
-        const resp = await axios.post("http://localhost:3000/api/get-orders", {
+        const resp = await axios.post(`${import.meta.env.VITE_server_url}/api/get-orders`, {
           token: localStorage.getItem("token"),
           account_id: props.account_id,
           account_type: props.account_type,

@@ -3,10 +3,13 @@ import OrderBook from './OrderBook'
 import axios from 'axios'
 import Funds from './Funds';
 import Positions from './Positions';
+import useAccountStore from '@/store/accountStore';
 function extractId(input: string): {
     type: "MASTER" | "CHILD" | null;
     id: string | null;
   } {
+    console.log("input: ", input);
+    if(!input) return {type: null, id: null}
     const masterRegex = /^MASTER:([a-zA-Z0-9]+)$/;
     const childRegex = /^CHILD:([a-zA-Z0-9]+)$/;
   
@@ -23,18 +26,15 @@ function extractId(input: string): {
     return { type: null, id: null };
   }
 export default function TabContent(props:any) {
-    const {type, id} = extractId(props.selectedAccount)
-    useEffect(() => {
-    console.log("selected account",props);
-     
-    },[props])
-    // console.log(props.selected)
+  const {selected }:{selected: any} = useAccountStore((state) => ({...state}));
+    
+    const {type, id} = extractId(selected)
   return (<>
-  
+
    {/* {props.selected==="trades" && <Trades/>} */}
-    {props.selectedTab=="orders" && <OrderBook account_id={id} account_type={type} />}
+     {props.selectedTab=="orders" && <OrderBook account_id={id} account_type={type} />}
      {props.selectedTab=="funds" && <Funds account_id={id} account_type={type} />}
-     {props.selectedTab==="positions" && <Positions account_id={id} account_type={type}/>}
+     {props.selectedTab==="positions" && <Positions />}
      </>
   )
 }

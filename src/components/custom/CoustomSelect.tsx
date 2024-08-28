@@ -16,7 +16,7 @@ export default function CoustomSelect(props:{options:string[], setChange:any, la
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                    {props.options.map(op=><SelectItem value={op}>{op}</SelectItem>)}
+                    {props.options ? props.options.map(op=><SelectItem value={op}>{op}</SelectItem>):<SelectItem value={"op"}>{"op"}</SelectItem> }
                   </SelectContent>
                 </Select>
               </div>

@@ -2,31 +2,29 @@ import React, { useEffect, useState } from 'react'
 import AccountSelection from '../Info/AccountSelection';
 import TabSelection from '../Info/TabSelection';
 import TabContent from '../Info/TabContent';
+import useAccountStore from '../../../store/accountStore';
+import Mtm from '../Info/Mtm';
 
 
-function info(props:any) {
-  // console.log("INFO:",props.masterAccount.name_tag);
-  const [accountOptions, setAccountOptions] = useState([]);
-  const [selectedAccount, setSelectedAccount] = useState("");
+function info() {
+  const {selected }= useAccountStore((state) => ({...state}));
   const [selectedTab, setSelectedTab] = useState<"positions"|"orders"|"trades"|"funds">("positions");
   useEffect(() => {
-    console.log(selectedAccount);
-  },[selectedAccount])
+    console.log(selected);
+  },[selected])
+
 
   useEffect(() => {
-    setSelectedAccount(`MASTER:${props.masterAccount.id}`)
-  },[props])
-
-  useEffect(() => {
-    console.log("info : positions");
+    console.log("info : ",selectedTab);
   },[selectedTab])
    
   return (
     <div>
-    <AccountSelection master={props.masterAccount} child={props.childAccounts} accountOptions={accountOptions} setSelectedAccount={setSelectedAccount} />
+    <Mtm />
+    <AccountSelection />
     <TabSelection selectedTab={selectedTab} setSelectedTab={setSelectedTab}/>
-    <TabContent master={props.masterAccount} child={props.childAccounts}  selectedTab={selectedTab} selectedAccount={selectedAccount}/>
-    </div>
+    <TabContent   selectedTab={selectedTab} />
+    </div> 
   )
 }
 

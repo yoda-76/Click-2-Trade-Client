@@ -13,7 +13,7 @@ import {
 // import axios from "axios";
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { deleteSessionReducer, updateSessionReducer } from "../../store/reducer";
+import { deleteSessionReducer, updateSessionReducer } from "../store/reducer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddAccount from "@/components/custom/AddAccount";
@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
     }, [details])
     useEffect(()=>{
       
-      axios.post("http://localhost:3000/api/get-user-details", {token: localStorage.getItem("token"), email:details.email}).then((resp)=>{
+      axios.post(`${import.meta.env.VITE_server_url}/api/get-user-details`, {token: localStorage.getItem("token"), email:details.email}).then((resp)=>{
         dispatch(updateSessionReducer(resp.data))
       })
 
@@ -80,7 +80,7 @@ const Dashboard: React.FC = () => {
 
     </div>
       {details&&details.accounts.map((a:any)=>{
-        return <div className="bg-orange-500"><h1>{JSON.stringify(a)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=http://localhost:3000/auth&state=MASTER:${a.id}`}>Generate Token</a> <Button onClick={()=>{activateAccountToggle(a.id)}}>{currentActiveAccount===a.id?"Deactivate":"Activate"}</Button> <Button onClick={(()=>{tradeNowHandler(a.id)})}>Trade Now</Button> <Button onClick={(()=>{navigate(`/manage-child?id=${a.id}`)})}>Manage Child</Button></div>
+        return <div className="bg-orange-500"><h1>{JSON.stringify(a)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=${import.meta.env.VITE_server_url}/auth&state=MASTER:${a.id}`}>Generate Token</a> <Button onClick={()=>{activateAccountToggle(a.id)}}>{currentActiveAccount===a.id?"Deactivate":"Activate"}</Button> <Button onClick={(()=>{tradeNowHandler(a.id)})}>Trade Now</Button> <Button onClick={(()=>{navigate(`/manage-child?id=${a.id}`)})}>Manage Child</Button></div>
       })}
     </div> 
   );

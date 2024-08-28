@@ -5,106 +5,65 @@ import Buttons from "../components/custom/TradePage/buttons";
 import Inputs from "../components/custom/TradePage/inputs";
 import LtpDisplay from "../components/custom/TradePage/ltpDisplay";
 import Info from "../components/custom/TradePage/info";
+import useAccountStore  from "../store/accountStore";
+import useOptionStore from "../store/optionsDataStore";
+import useLtpStore from "@/store/ltpStore";
+import useSymbolStore from "@/store/symbolStore";
+import usePositionStore from "@/store/positionStore";
+import useMtmStore from "@/store/mtmStore";
+import useSlStore from "@/store/slStore";
 
-const SOCKET_SERVER_URL = "http://localhost:3000";
+// const SOCKET_SERVER_URL = "http://localhost:3000";
+
+function extractId(input: string): {
+  type: "MASTER" | "CHILD" | null;
+  id: string | null;
+} {
+  console.log("input: ", input);
+  if(!input) return {type: null, id: null}
+  const masterRegex = /^MASTER:([a-zA-Z0-9]+)$/;
+  const childRegex = /^CHILD:([a-zA-Z0-9]+)$/;
+
+  let match = input.match(masterRegex);
+  if (match) {
+    return { type: "MASTER", id: match[1] };
+  }
+
+  match = input.match(childRegex);
+  if (match) {
+    return { type: "CHILD", id: match[1] };
+  }
+
+  return { type: null, id: null };
+}
 
 export default function Trade() {
-  const [feed, setFeed] = useState<any>({});
-  const [optionsData, setOptionsData] = useState<any>({});
-  const [expiryDates, setExpiryDates] = useState<string[]>([]);
-  const [expiry, setExpiry] = useState("");
-  const [strikePrices, setStrikePrices] = useState<number[]>([]);
-  const [callStrike, setCallStrike] = useState(0);
-  const [putStrike, setPutStrike] = useState(0);
-  const [callKey, setCallKey] = useState("");
-  const [putKey, setPutKey] = useState("");
-  const [callSymbol, setCallSymbol] = useState("");
-  const [putSymbol, setPutSymbol] = useState("");
-  const [callLTP, setCallLTP] = useState(0);
-  const [putLTP, setPutLTP] = useState(0);
-  const [quantity, setQuantity] = useState(0);
-  const [product, setProduct] = useState("");
-  const [orderType, setOrderType] = useState("");
-  const [triggerPrice, setTriggerPrice] = useState(0);
+  const {master,updateMaster, updateChild, selected}:{master: any,  selected:string , setSelectedAccount: Function, updateMaster: Function, updateChild: Function} = useAccountStore((state) => ({...state}));
+  const {setOptionsData} = useOptionStore((state) => ({...state}));
+  const {updateBaseLTP, updateCallLTP, updatePutLTP}= useLtpStore((state) => ({...state}));
+  const {base, call, put} = useSymbolStore((state) => ({...state}));
   const [accountId, setAccountId] = useState<string | null>(null);
-  const [masterAccount, setMasterAccount] = useState<any>({});
-  const [childAccounts, setChildAccounts] = useState<any[]>([]);
-  const [index, setIndex] = useState<{ name: string; symbol: string }>({
-    name: "NIFTY",
-    symbol: "NSE_INDEX|Nifty 50",
-  });
-  const [indexLtp, setIndexLtp] = useState<number>(0);
+  const [feed, setFeed] = useState<any>({});
+  const {position, updatePosition}:{position:any[], updatePosition:Function} = usePositionStore((state) => ({...state}));
+  const {updateMtm} = useMtmStore((state) => ({...state}));
+  const {sl, target, mtmSl, mtmTarget, updateSl, updateTarget, updateMtmSl, updateMtmTarget}:{sl:any, target:any, mtmSl:any, mtmTarget:any, updateSl:Function, updateTarget:Function, updateMtmSl:Function, updateMtmTarget:Function}  = useSlStore((state) => ({...state}));
+  // const {selected}:{master: any, child: any[], selected:string , setSelectedAccount: (data: any) => void} = useAccountStore((state) => ({...state}));
+    // const {updatePosition}= usePositionStore((state) => ({...state}));
+    const updatePositions=async () => {
+    const {type, id} = extractId(selected)
 
-  useEffect(() => {
-    // search for the instrument token from the optionsData and update put and call key and symbol
-    try {
-      if (putStrike) {
-        setPutKey(
-          optionsData?.data[index.name][`${expiry} : ${putStrike}.0`].PE
-            .instrument_key
-        );
-        setPutSymbol(
-          optionsData?.data[index.name][`${expiry} : ${putStrike}.0`].PE
-            .tradingsymbol
-        );
+      try {
+        const resp = await axios.post(`${import.meta.env.VITE_server_url}/api/get-positions`, {
+          token: localStorage.getItem("token"),
+          account_id: id,
+          account_type: type,
+        });
+        console.log("orders fetched", resp.data);
+        updatePosition(resp.data);
+      } catch (e) {
+        console.log(e);
       }
-      if (callStrike) {
-        setCallKey(
-          optionsData?.data[index.name][`${expiry} : ${callStrike}.0`].CE
-            .instrument_key
-        );
-        setCallSymbol(
-          optionsData?.data[index.name][`${expiry} : ${callStrike}.0`].CE
-            .tradingsymbol
-        );
-      }
-    } catch (e) {
-      console.log(e);
     }
-  }, [index, putStrike, callStrike]);
-
-  useEffect(() => { //call and put ltp are being updated if the updated ltp is not yet came fro the feed
-    feed[callKey] && setCallLTP(feed[callKey]?.ff.marketFF.ltpc.cp);
-    feed[putKey] && setPutLTP(feed[putKey]?.ff.marketFF.ltpc.cp);
-  }, [callKey, putKey]);
-
-  useEffect(() => {
-    if (!index || !optionsData.data) return;
-    // console.log(optionsData);
-    let tempExpiryDates: string[] = [];
-    Object.keys(optionsData.data[index.name]).map((op) => {
-      const result = extractExpiryAndStrike(op);
-      if (!tempExpiryDates.includes(result.expiryDate))
-        tempExpiryDates.push(result.expiryDate);
-    });
-    tempExpiryDates.sort((date1: string, date2: string) => new Date(date1).getTime() - new Date(date2).getTime());
-    setExpiryDates(tempExpiryDates);
-    const newIndexLtp = feed[index?.symbol]?.ff.indexFF.ltpc.ltp
-    if(newIndexLtp){
-      setIndexLtp(newIndexLtp);
-    }else{
-      // console.log("no index ltp");
-      setIndexLtp(0);
-
-    }
-  }, [index]);
-  useEffect(() => {
-    if (!expiry || !optionsData) return;
-    let tempStrikePrices: number[] = [];
-    Object.keys(optionsData.data[index.name]).map((op) => {
-      const result = extractExpiryAndStrike(op);
-      // tempExpiryDates.push(result.expiryDate);
-      if (
-        result.expiryDate === expiry &&
-        !tempStrikePrices.includes(result.strikePrice)
-      )
-        tempStrikePrices.push(result.strikePrice);
-      // tempStrikePrices.push(result.strikePrice);
-    });
-    setStrikePrices(tempStrikePrices);
-    setCallStrike(0);
-    setPutStrike(0);
-  }, [expiry]);
   useEffect(() => {
     const fetchData = async () => {
       const queryParameters = new URLSearchParams(location.search);
@@ -113,20 +72,21 @@ export default function Trade() {
       //get all child account id
       //get-child-account-details
       axios
-        .post("http://localhost:3000/api/get-child-account-details", {
+        .post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, {
           token: localStorage.getItem("token"),
           master_id: id,
         })
         .then((resp) => {
-          setChildAccounts(resp.data);
+          console.log("child;",resp.data);
+          updateChild(resp.data);
         });
       axios
-        .post("http://localhost:3000/api/get-account-details", {
+        .post(`${import.meta.env.VITE_server_url}/api/get-account-details`, {
           token: localStorage.getItem("token"),
           id: id,
         })
         .then((resp) => {
-          setMasterAccount(resp.data);
+          updateMaster(resp.data);
         });
       // some await functions
       if (id) {
@@ -136,60 +96,22 @@ export default function Trade() {
     };
 
     fetchData();
+    updatePositions()
   }, [location.search]);
-
-  // useEffect(() => {
-  //   console.log("childs: ",childAccounts);
-  //   console.log("master: ",masterAccount);
-
-  // },[childAccounts, masterAccount])
-
-  const extractExpiryAndStrike = (
-    input: string
-  ): { expiryDate: string; strikePrice: number } => {
-    const regex = /(\d{4}-\d{2}-\d{2})\s*:\s*([\d.]+)/;
-    const match = input.match(regex);
-
-    if (match) {
-      const expiryDate = match[1];
-      const strikePrice = parseFloat(match[2]);
-      return { expiryDate, strikePrice };
-    } else {
-      throw new Error("Invalid input format");
-    }
-  };
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/get-structured-options-data")
+      .get(`${import.meta.env.VITE_server_url}/api/get-structured-options-data`)
       .then((resp) => {
         setOptionsData(resp.data);
-        let tempExpiryDates: string[] = [];
-        let tempStrikePrices: number[] = [];
-        Object.keys(resp.data.data[index.name]).map((op) => {
-          // console.log(op);
-          const result = extractExpiryAndStrike(op);
-          if (!tempExpiryDates.includes(result.expiryDate))
-            tempExpiryDates.push(result.expiryDate);
-          // tempExpiryDates.push(result.expiryDate);
-          if (!tempStrikePrices.includes(result.strikePrice))
-            tempStrikePrices.push(result.strikePrice);
-          // tempStrikePrices.push(result.strikePrice);
-        });
-        tempExpiryDates.sort((date1: string, date2: string) => new Date(date1).getTime() - new Date(date2).getTime());
-
-        setExpiryDates(tempExpiryDates);
-        setStrikePrices(tempStrikePrices);
-        // console.log(resp.data);
       });
 
-    const socket = io(SOCKET_SERVER_URL);
+    const socket = io(import.meta.env.VITE_server_url);
     socket.emit("new-user", { test: 123 });
 
     // Listen for the "market-data" event
     socket.on("market-data", (data: any) => {
       setFeed(data.feeds);
-      // console.log(data.feeds);
     });
 
     return () => {
@@ -198,133 +120,83 @@ export default function Trade() {
   }, []);
 
   useEffect(() => {
-    const newIndexLtp = feed[index?.symbol]?.ff.indexFF.ltpc.ltp;
-    newIndexLtp && setIndexLtp(newIndexLtp);
+    var newBaseLTP = 0;
+    try {
+       newBaseLTP = feed[base?.key]?.ff.indexFF.ltpc.ltp;
+    } catch (error) {
+       newBaseLTP = feed[base?.key]?.ff.marketFF.ltpc.ltp;
+    }
 
-    feed[callKey] && setCallLTP(feed[callKey]?.ff.marketFF.ltpc.cp);
-    feed[putKey] && setPutLTP(feed[putKey]?.ff.marketFF.ltpc.cp);
+    newBaseLTP && updateBaseLTP(newBaseLTP);
+    feed[call.key] && updateCallLTP(feed[call.key]?.ff.marketFF.ltpc.cp);
+    feed[put.key] && updatePutLTP(feed[put.key]?.ff.marketFF.ltpc.cp);
+  
+    //maintaning pnl
+    var mtm = 0
+    const updatedPosition = position.map(p=>{
+      var ltp = 0
+      try {
+        ltp = feed[p.instrument_token]?.ff.indexFF.ltpc.ltp;
+      } catch (error) {
+        ltp = feed[p.instrument_token]?.ff.marketFF.ltpc.ltp;
+      };
+      if(typeof ltp === "number"){
+        const pnl = Math.trunc(((p.sell_value - p.buy_value) + (p.quantity * ltp * p.multiplier)) * 100) / 100
+        if(sl[p.instrument_token] >=pnl && sl[p.instrument_token] !==0){
+          console.log("squared of, sl hit");
+          updateSl({key: p.instrument_token, value: 0})
+          //squareoff
+        }
+        if(target[p.instrument_token] <=pnl && target[p.instrument_token] !==0){
+          console.log("squared of, target hit");
+          updateTarget({key: p.instrument_token, value: 0})
+          //squareoff
+        }
+        mtm+=pnl
+        
+        
+        return {...p, last_price: `=${ltp}`, pnl: pnl, sl:sl[p.instrument_token], target:target[p.instrument_token]}
+      }
+      else{
+        mtm+=p.pnl
+        return p
+      }
+      // update mtm
+    })
+    updateMtm(mtm)
+    //check mtm sl and target
+    if(mtmSl !== 0 && mtmSl >= mtm){
+      console.log("MTM SL HIT");
+      axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
+        account_id:master.id, account_type:"MASTER"
+      }).then((resp)=>{
+        updateMtmSl(0)
+        updatePositions()
+      })
+    }
+    if(mtmTarget !== 0 && mtmTarget <= mtm){
+      console.log("MTM TARGET HIT");
+      axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
+        account_id:master.id, account_type:"MASTER"
+      }).then((resp)=>{
+        // updateMtmSl(0)
+        updatePositions()
+        
+      })
+      updateMtmTarget(0)
+    }
+    updatePosition(updatedPosition);
 
-    // console.log(putKey, feed[putKey]);
-    // console.log(callKey, feed[callKey]);
-    // console.log((feed[callKey]));
   }, [feed]);
-
-  const memoizedSetChildAccounts = useCallback(
-    (value: any[]) => setChildAccounts(value),
-    []
-  );
-  const memoizedSetMasterAccount = useCallback(
-    (value: any) => setMasterAccount(value),
-    []
-  );
-  const memoizedSetPutStrike = useCallback(
-    (value: number) => setPutStrike(value),
-    []
-  );
-  const memoizedSetCallStrike = useCallback(
-    (value: number) => setCallStrike(value),
-    []
-  );
-  const memoizedSetExpiry = useCallback(
-    (value: string) => setExpiry(value),
-    []
-  );
-  const memoizedSetIndex = useCallback(
-    (value: { name: string; symbol: string }) => setIndex(value),
-    []
-  );
-
-  const memoizedSetProduct = useCallback(
-    (value: string) => setProduct(value),
-    []
-  );
-  const memoizedSetOrderType = useCallback(
-    (value: string) => setOrderType(value),
-    []
-  );
-
-  const memoizedSetQuantity = useCallback(
-    (value: number) => setQuantity(value),
-    []
-  );
-
-  const memoizedSetTriggerPrice = useCallback(
-    (value: number) => setTriggerPrice(value),
-    []
-  );
-  const memoizedInfoProps = useMemo(
-    () => ({
-      masterAccount,
-      childAccounts,
-    }),
-    [masterAccount, childAccounts]
-  );
-  const memoizedInputsProps = useMemo(
-    () => ({
-      setPutStrike: memoizedSetPutStrike,
-      setCallStrike: memoizedSetCallStrike,
-      setExpiry: memoizedSetExpiry,
-      strikePrices,
-      expiryDates,
-      optionsData,
-      setIndex: memoizedSetIndex,
-      setProduct: memoizedSetProduct,
-      setOrderType: memoizedSetOrderType,
-      setQuantity: memoizedSetQuantity,
-      setTriggerPrice: memoizedSetTriggerPrice,
-    }),
-    [
-      memoizedSetPutStrike,
-      memoizedSetCallStrike,
-      memoizedSetExpiry,
-      strikePrices,
-      expiryDates,
-      optionsData,
-      memoizedSetIndex,
-      memoizedSetProduct,
-      memoizedSetOrderType,
-      memoizedSetQuantity,
-      memoizedSetTriggerPrice,
-    ]
-  );
-
-  useEffect(() => {
-    console.log(
-      product,
-      orderType,
-      quantity,
-      callKey,
-      putKey,
-      "transaction_type : SELL"
-    );
-  }, [quantity, orderType, product]);
 
   return (
     <div>
-      <Inputs {...memoizedInputsProps} />
-      <LtpDisplay
-        callStrike={callStrike}
-        putStrike={putStrike}
-        callLTP={callLTP}
-        putLTP={putLTP}
-        index={index}
-        indexLtp={indexLtp}
-        callSymbol={callSymbol}
-        putSymbol={putSymbol}
-      />
+      <Inputs />
+      <LtpDisplay/>
       <Buttons
         account_id={accountId}
-        product={product}
-        orderType={orderType}
-        quantity={quantity}
-        callKey={callKey}
-        putKey={putKey}
-        index={index.name}
-        triggerPrice={triggerPrice}
-        callLTP={callLTP}
-        putLTP={putLTP}
       />
-      <Info {...memoizedInfoProps} />
+      <Info/>
     </div>
   );
 }

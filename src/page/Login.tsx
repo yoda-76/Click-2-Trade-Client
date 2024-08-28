@@ -13,7 +13,7 @@ import axios from "axios";
 import React, { useState } from 'react';
 import { useDispatch } from "react-redux";
 import { Router , useNavigate} from "react-router-dom";
-import { updateSessionReducer } from "../../store/reducer";
+import { updateSessionReducer } from "../store/reducer";
 import { useCookies } from "react-cookie";
 interface FormValues {
   email: string;
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     // Handle form submission logic here
     console.log(formValues);
-    const response =await axios.post( "http://localhost:3000/api/login",formValues)
+    const response =await axios.post( `${import.meta.env.VITE_server_url}/api/login`,formValues)
     console.log(response)
     setCookie("token",response.data.token)
     localStorage.setItem("token",response.data.token)
