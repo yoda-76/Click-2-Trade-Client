@@ -1,6 +1,5 @@
 import create from 'zustand';
 
-import {devtools, persist} from 'zustand/middleware'
 import { equitySymbols } from "@/lib/equity-symbols";
 
 const staticStore = (set: any) => ({

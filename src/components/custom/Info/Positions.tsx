@@ -27,7 +27,7 @@ export default function Positions() {
 
         <div>Action</div>
       </div>
-      {position.map((v: any, i: number) => {
+      {position.map((v: any) => {
         // console.log(v);
         return (
           <div className="grid grid-cols-12">

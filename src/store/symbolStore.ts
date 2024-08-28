@@ -1,8 +1,5 @@
 import create from 'zustand';
 
-import {devtools, persist} from 'zustand/middleware'
-import useOptionsDataStore from './optionsDataStore';
-import useStaticStore from './staticStore';
 
 const symbolStore = (set: any) => ({
     base:{

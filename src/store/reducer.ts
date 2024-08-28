@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { stat } from "fs";
-
 const initialState: any = {
   email: localStorage.getItem("email") || "",
   token: localStorage.getItem("token") || "",

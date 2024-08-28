@@ -32,17 +32,14 @@ function extractId(input: string): {
 }
 
 export default function Buttons(props:any) {
-  const {putLTP, callLTP} = useLtpStore((state) => ({...state}));
+  const {putLTP} = useLtpStore((state) => ({...state}));
   const {call,put}=useSymbolStore((state) => ({...state}));
-  const {exchange,
+  const {
     base,
     quantity,
     orderType,
     productType,
-    triggerPrice,
-    marketProtection,
-    preferedStopLossPoints,
-    preferedTargetPoints} = useOrderParameterStore((state) => ({...state}));
+    triggerPrice,} = useOrderParameterStore((state) => ({...state}));
 
     const {selected}:{master: any, child: any[], selected:string , setSelectedAccount: (data: any) => void} = useAccountStore((state) => ({...state}));
     const {updatePosition}= usePositionStore((state) => ({...state}));

@@ -37,7 +37,7 @@ export default function OrderBook(props: any) {
         <div>Message</div>
         <div>Action</div>
       </div>
-      {orders.map((v: any, i: number) => {
+      {orders.map((v: any) => {
         return (
           <div className="grid grid-cols-12">
             <div className="break-words">
