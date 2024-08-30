@@ -120,25 +120,34 @@ export default function Trade() {
   }, []);
 
   useEffect(() => {
-    var newBaseLTP = 0;
-    try {
-       newBaseLTP = feed[base?.key]?.ff.indexFF.ltpc.ltp;
-    } catch (error) {
-       newBaseLTP = feed[base?.key]?.ff.marketFF.ltpc.ltp;
-    }
+    var newBaseLTP = feed[base?.key]?.ltpc.ltp;
+    // try {
+    //    newBaseLTP = feed[base?.key]?.ff.indexFF.ltpc.ltp;
+    // } catch (error) {
+    //    newBaseLTP = feed[base?.key]?.ff.marketFF.ltpc.ltp;
+    // }
 
     newBaseLTP && updateBaseLTP(newBaseLTP);
-    feed[call.key] && updateCallLTP(feed[call.key]?.ff.marketFF.ltpc.cp);
-    feed[put.key] && updatePutLTP(feed[put.key]?.ff.marketFF.ltpc.cp);
+    if(feed[call.key]){
+      // updateCallLTP(feed[call.key]?.ff.marketFF.ltpc.cp);
+      updateCallLTP(feed[call.key]?.ltpc.ltp);
+        }
+    if(feed[put.key]){
+      // updatePutLTP(feed[put.key]?.ff.marketFF.ltpc.cp);
+      updatePutLTP(feed[put.key]?.ltpc.ltp);
+
+        }
+    // feed[call.key] && updateCallLTP(feed[call.key]?.ff.marketFF.ltpc.cp);
+    // feed[put.key] && updatePutLTP(feed[put.key]?.ff.marketFF.ltpc.cp);
   
     //maintaning pnl
     var mtm = 0
     const updatedPosition = position.map(p=>{
       var ltp = 0
       try {
-        ltp = feed[p.instrument_token]?.ff.indexFF.ltpc.ltp;
+        ltp = feed[p.instrument_token]?.ltpc.ltp;
       } catch (error) {
-        ltp = feed[p.instrument_token]?.ff.marketFF.ltpc.ltp;
+        ltp = feed[p.instrument_token]?.ltpc.ltp;
       };
       if(typeof ltp === "number"){
         const pnl = Math.trunc(((p.sell_value - p.buy_value) + (p.quantity * ltp * p.multiplier)) * 100) / 100
@@ -170,9 +179,9 @@ export default function Trade() {
       axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
         account_id:master.id, account_type:"MASTER"
       }).then(()=>{
-        updateMtmSl(0)
         updatePositions()
       })
+      updateMtmSl(0)
     }
     if(mtmTarget !== 0 && mtmTarget <= mtm){
       console.log("MTM TARGET HIT");

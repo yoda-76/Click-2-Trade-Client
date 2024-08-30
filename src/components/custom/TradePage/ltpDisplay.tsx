@@ -4,12 +4,13 @@ import useLtpStore from "@/store/ltpStore";
 
 export default function LtpDisplay() {
   const {base, call, put} = useSymbolStore((state) => ({base: state.base, call: state.call, put: state.put}));
-  const {baseLTP, callLTP, putLTP} = useLtpStore((state) => ({baseLTP: state.baseLTP, callLTP: state.callLTP, putLTP: state.putLTP}));
+  const {baseLTP, callLTP, putLTP} = useLtpStore((state) => ({...state}));
   return (
     <div className="grid grid-cols-3 gap-1 m-1">
       <div className="flex-col flex  items-start">
-        <div className=" flex   ">
+        <div className=" flex  flex-col ">
           Symbol : <div>{call.symbol}</div>
+          Key: <div>{call.key}</div>
         </div>
         <div className=" flex  ">
           LTP : <div>{callLTP}</div>
@@ -23,8 +24,9 @@ export default function LtpDisplay() {
         </div>
       </div>
       <div className="flex flex-col  items-end">
-        <div className=" flex">
+        <div className=" flex flex-col">
           Symbol : <div>{put.symbol}</div>
+          Key: <div>{put.key}</div>
         </div>
         <div className=" flex">
           LTP : <div>{putLTP}</div>
