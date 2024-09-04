@@ -12,7 +12,7 @@ import useSymbolStore from "@/store/symbolStore";
 import usePositionStore from "@/store/positionStore";
 import useMtmStore from "@/store/mtmStore";
 import useSlStore from "@/store/slStore";
-
+import '../App.css'
 // const SOCKET_SERVER_URL = "http://localhost:3000";
 
 function extractId(input: string): {
@@ -199,13 +199,14 @@ export default function Trade() {
   }, [feed]);
 
   return (
-    <div>
+    <div className="main-bg p-2" >
       <Inputs />
-      <LtpDisplay/>
+      <LtpDisplay/> 
+      {/* strike */}
       <Buttons
         account_id={accountId}
-      />
-      <Info/>
+        />
+        <Info/>
     </div>
   );
 }

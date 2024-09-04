@@ -7,30 +7,29 @@ export default function Positions() {
   const { updateSl, updateTarget } = useSlStore((state) => ({
     ...state,
   }));
-  
+
   const [slValue, setSlValue] = useState(0);
   const [targetValue, setTargetValue] = useState(0);
   return (
     <>
-      <div className="grid grid-cols-12 bg-gray-300">
+      <div className="grid p-2 grid-cols-12 text-slate-300">
         <div>Symbol Name</div>
         <div>Qty</div>
-        <div>pnl</div>
-        <div>ltp</div>
+        <div>PNL</div>
+        <div>LTP</div>
         <div>SL</div>
-        <div>set SL</div>
+        <div>Set SL</div>
         <div>Target</div>
-        <div>set Target</div>
-        <div>sell price</div>
-        <div>buy price</div>
-        <div>multiplier</div>
-
+        <div>Set Target</div>
+        <div>Sell price</div>
+        <div>Buy price</div>
+        <div>Multiplier</div>
         <div>Action</div>
       </div>
       {position.map((v: any) => {
         // console.log(v);
         return (
-          <div className="grid grid-cols-12">
+          <div className={`grid grid-cols-12 ${v.pnl>0?"glassgr":"glassrd"}` }>
             <div className="break-words">
               {v.tradingsymbol ? v.tradingsymbol : "---"}
             </div>

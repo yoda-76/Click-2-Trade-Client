@@ -23,7 +23,7 @@ export default function OrderBook(props: any) {
   return (
     <>
       {/* {JSON.stringify(orders)} */}
-      <div className="grid grid-cols-12 bg-gray-300">
+      <div className="grid glass1 grid-cols-12 bg-gray-300">
         <div>Symbol Name</div>
         <div>Type</div>
         <div>Side</div>

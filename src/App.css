@@ -1,4 +1,4 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +39,44 @@
 
 .read-the-docs {
   color: #888;
+} */
+
+.main-bg {
+  background-color: #0F0F0F;
+  color: white;
+}
+
+.glass1 {
+  background: #212121
+}
+
+.lighttxt {
+  color: #aba6a6;
+}
+
+.glassgr {
+
+  background: rgba(38, 248, 0, 0.15);
+  /* box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); */
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  /* border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18); */
+}
+
+.glassrd {
+  background: rgba(248, 6, 0, 0.15);
+  /* box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); */
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  /* border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18); */
+}
+
+.gr {
+  color: #1ae42e;
+}
+
+.rd {
+  color: #FF7D7D;
 }

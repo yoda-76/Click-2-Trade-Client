@@ -25,192 +25,257 @@ const extractExpiryAndStrike = (
 };
 
 function Inputs() {
-  const {expiry, triggerPrice, orderType, productType, updateExpiry, updateCallStrike, updatePutStrike, updateQuantity, updateOrderType, updateProductType, updateTriggerPrice}=useOrderParameterStore((state) => ({expiry:state.expiry, callStrike:state.callStrike, updateExpiry:state.updateExpiry, updateCallStrike:state.updateCallStrike, updatePutStrike:state.updatePutStrike, updateQuantity: state.updateQuantity, updateOrderType: state.updateOrderType, updateProductType: state.updateProductType, updateTriggerPrice: state.updateTriggerPrice, updateMarketProtection: state.updateMarketProtection, updatePreferedStopLossPoints: state.updatePreferedStopLossPoints, updatePreferedTargetPoints: state.updatePreferedTargetPoints, triggerPrice:state.triggerPrice, orderType:state.orderType, productType:state.productType}));
-  
-  const {base, updateBase, updateCall, updatePut }=useSymbolStore((state) => ({base:state.base, updateCall:state.updateCall, updatePut:state.updatePut, updateBase:state.updateBase}));
-  
-  const {optionsData}:{optionsData: any} = useOptionsDataStore((state) => ({optionsData: state.optionsData}));
-  
-  const {expiries, strikes ,updateExpiries, updateStrikes} = useStaticStore((state) => ({updateExpiries:state.updateExpiries, expiries:state.expiries, updateStrikes:state.updateStrikes, strikes:state.strikes}));
+  const {
+    expiry,
+    triggerPrice,
+    orderType,
+    productType,
+    updateExpiry,
+    updateCallStrike,
+    updatePutStrike,
+    updateQuantity,
+    updateOrderType,
+    updateProductType,
+    updateTriggerPrice,
+  } = useOrderParameterStore((state) => ({
+    expiry: state.expiry,
+    callStrike: state.callStrike,
+    updateExpiry: state.updateExpiry,
+    updateCallStrike: state.updateCallStrike,
+    updatePutStrike: state.updatePutStrike,
+    updateQuantity: state.updateQuantity,
+    updateOrderType: state.updateOrderType,
+    updateProductType: state.updateProductType,
+    updateTriggerPrice: state.updateTriggerPrice,
+    updateMarketProtection: state.updateMarketProtection,
+    updatePreferedStopLossPoints: state.updatePreferedStopLossPoints,
+    updatePreferedTargetPoints: state.updatePreferedTargetPoints,
+    triggerPrice: state.triggerPrice,
+    orderType: state.orderType,
+    productType: state.productType,
+  }));
 
-  const [updateCallLTP, updatePutLTP] = useLtpStore((state) => [state.updateCallLTP, state.updatePutLTP]);
-  
+  const { base, updateBase, updateCall, updatePut } = useSymbolStore(
+    (state) => ({
+      base: state.base,
+      updateCall: state.updateCall,
+      updatePut: state.updatePut,
+      updateBase: state.updateBase,
+    })
+  );
+
+  const { optionsData }: { optionsData: any } = useOptionsDataStore(
+    (state) => ({ optionsData: state.optionsData })
+  );
+
+  const { expiries, strikes, updateExpiries, updateStrikes } = useStaticStore(
+    (state) => ({
+      updateExpiries: state.updateExpiries,
+      expiries: state.expiries,
+      updateStrikes: state.updateStrikes,
+      strikes: state.strikes,
+    })
+  );
+
+  const [updateCallLTP, updatePutLTP] = useLtpStore((state) => [
+    state.updateCallLTP,
+    state.updatePutLTP,
+  ]);
+
   return (
     <>
-      <div className="grid grid-cols-8 m-1">
-        <CoustomSelect
-          options={["NSE_FO"]}
-          label="select exchange"
-          setChange={(v: any) => { console.log(v); }}
-        />
-        <CoustomSelect
-          options={["NIFTY", "BANKNIFTY", "FINNIFTY",...equitySymbols]}
-          label="Index"
-          setChange={(v: any) => {
-            var newBase={symbol:"", key:""}
-            if(v === "NIFTY" || v === "BANKNIFTY" || v === "FINNIFTY"){
-              
-              newBase = (v === "NIFTY"
-                ? { symbol: "NIFTY", key: "NSE_INDEX|Nifty 50" }
-                : v === "BANKNIFTY"
-                ? { symbol: "BANKNIFTY", key: "NSE_INDEX|Nifty Bank" }
-                : { symbol: "FINNIFTY", key: "NSE_INDEX|Nifty Fin Service" })
-              updateBase(newBase);
-              
-            }else{
-                 
-                  newBase={ symbol: v, key: optionsData.data.EQUITY[v].instrument_key }
-                  updateBase(newBase);
-            } 
-            let tempExpiryDates: string[] = [];
+      <div className="glass1 p-2">
+        <div className="grid w-full gap-[6rem] grid-cols-5 m-1 my-2" >
+          <CoustomSelect
+            options={["NSE_FO"]}
+            label="Select Exchange"
+            
+            setChange={(v: any) => {
+              console.log(v);
+            }}
+          />
+          <CoustomSelect
+            options={["NIFTY", "BANKNIFTY", "FINNIFTY", ...equitySymbols]}
+            label="Index"
+            setChange={(v: any) => {
+              var newBase = { symbol: "", key: "" };
+              if (v === "NIFTY" || v === "BANKNIFTY" || v === "FINNIFTY") {
+                newBase =
+                  v === "NIFTY"
+                    ? { symbol: "NIFTY", key: "NSE_INDEX|Nifty 50" }
+                    : v === "BANKNIFTY"
+                    ? { symbol: "BANKNIFTY", key: "NSE_INDEX|Nifty Bank" }
+                    : {
+                        symbol: "FINNIFTY",
+                        key: "NSE_INDEX|Nifty Fin Service",
+                      };
+                updateBase(newBase);
+              } else {
+                newBase = {
+                  symbol: v,
+                  key: optionsData.data.EQUITY[v].instrument_key,
+                };
+                updateBase(newBase);
+              }
+              let tempExpiryDates: string[] = [];
               Object.keys(optionsData.data[newBase.symbol]).map((op) => {
-              const result = extractExpiryAndStrike(op);
-              if (!tempExpiryDates.includes(result.expiryDate))
+                const result = extractExpiryAndStrike(op);
+                if (!tempExpiryDates.includes(result.expiryDate))
                   tempExpiryDates.push(result.expiryDate);
               });
-              tempExpiryDates.sort((date1: string, date2: string) => new Date(date1).getTime() - new Date(date2).getTime());
+              tempExpiryDates.sort(
+                (date1: string, date2: string) =>
+                  new Date(date1).getTime() - new Date(date2).getTime()
+              );
               updateExpiries(tempExpiryDates);
               updateStrikes([]);
               updateCallLTP(0);
               updatePutLTP(0);
-          }}
-        />
-        <CoustomSelect
-          options={expiries}
-          label="Expiry"
-          setChange={(v: any) => {
-            let tempStrikePrices: number[] = [];
-            // console.log(base);
-            Object.keys(optionsData.data[base.symbol]).map((op) => {
-              const result = extractExpiryAndStrike(op);
-              // tempExpiryDates.push(result.expiryDate);
-              // console.log(result.expiryDate === expiry ,!tempStrikePrices.includes(result.strikePrice));
-              if (
-                result.expiryDate === v                                      
-              ){
-                console.log(result);
-                tempStrikePrices.push(result.strikePrice);}
+            }}
+          />
+          <CoustomSelect
+            options={expiries}
+            label="Expiry"
+            setChange={(v: any) => {
+              let tempStrikePrices: number[] = [];
+              // console.log(base);
+              Object.keys(optionsData.data[base.symbol]).map((op) => {
+                const result = extractExpiryAndStrike(op);
+                // tempExpiryDates.push(result.expiryDate);
+                // console.log(result.expiryDate === expiry ,!tempStrikePrices.includes(result.strikePrice));
+                if (result.expiryDate === v) {
+                  console.log(result);
+                  tempStrikePrices.push(result.strikePrice);
+                }
                 // tempStrikePrices.push(result.strikePrice);
               });
               // console.log("object", tempStrikePrices);
-            updateExpiry(v);
-            updateStrikes(tempStrikePrices);
-
-          }}
-        />
-        {/* {`${ strikes}`} */}
-        <CoustomSelect
-          options={strikes}
-          label="Call Strike"
-          setChange={(v: number) => {
-            updateCallStrike(v);
-            Object.keys(optionsData.data[base.symbol]).map((op) => {
-              const option = optionsData.data[base.symbol][op];
-              const result = extractExpiryAndStrike(op);
-              if (result.expiryDate === expiry && result.strikePrice === v) {
-                console.log({
-                  symbol: option.CE.tradingsymbol,
-                  key: option.CE.instrument_key,
-                });
-                updateCall({
-                  symbol: option.CE.tradingsymbol,
-                  key: option.CE.instrument_key,
-                });
-              }
-              
-            })
-          }}
+              updateExpiry(v);
+              updateStrikes(tempStrikePrices);
+            }}
+          />
+          {/* {`${ strikes}`} */}
+          <CoustomSelect
+            options={strikes}
+            label="Call Strike"
+            setChange={(v: number) => {
+              updateCallStrike(v);
+              Object.keys(optionsData.data[base.symbol]).map((op) => {
+                const option = optionsData.data[base.symbol][op];
+                const result = extractExpiryAndStrike(op);
+                if (result.expiryDate === expiry && result.strikePrice === v) {
+                  console.log({
+                    symbol: option.CE.tradingsymbol,
+                    key: option.CE.instrument_key,
+                  });
+                  updateCall({
+                    symbol: option.CE.tradingsymbol,
+                    key: option.CE.instrument_key,
+                  });
+                }
+              });
+            }}
           />
           {/* {`${ }`} */}
-        <CoustomSelect
-          options={strikes}
-          label="Put Strike"
-          setChange={(v: any) => {
-            // props.setPutStrike(v);
-            updatePutStrike(v);
-            Object.keys(optionsData.data[base.symbol]).map((op) => {
-              const option = optionsData.data[base.symbol][op];
-              const result = extractExpiryAndStrike(op);
-              if (result.expiryDate === expiry && result.strikePrice === v) {
-                console.log({
-                  symbol: option.PE.tradingsymbol,
-                  key: option.PE.instrument_key,
-                })
-                updatePut({
-                  symbol: option.PE.tradingsymbol,
-                  key: option.PE.instrument_key,
-                });
-              }
-            })
-          }}
-        />
-        <div className="flex-col">
-          <Label>Qty</Label>
-          <Input onChange={(e: any) => {
-            updateQuantity(e.target.value)
-            }} type="number" placeholder="Qty" />
+          <CoustomSelect
+            options={strikes}
+            label="Put Strike"
+            setChange={(v: any) => {
+              // props.setPutStrike(v);
+              updatePutStrike(v);
+              Object.keys(optionsData.data[base.symbol]).map((op) => {
+                const option = optionsData.data[base.symbol][op];
+                const result = extractExpiryAndStrike(op);
+                if (result.expiryDate === expiry && result.strikePrice === v) {
+                  console.log({
+                    symbol: option.PE.tradingsymbol,
+                    key: option.PE.instrument_key,
+                  });
+                  updatePut({
+                    symbol: option.PE.tradingsymbol,
+                    key: option.PE.instrument_key,
+                  });
+                }
+              });
+            }}
+          />
         </div>
-        <CoustomSelect
-          options={["Intraday"]}
-          label="Product Type"
-          setChange={(v: any) => { 
-            if(v === 'Intraday'){
-              updateProductType('D')
-            }
-           }}
-        />
-        <CoustomSelect
-          options={["MARKET", "LIMIT"]}
-          label="Order Type"
-          setChange={(v: any) => { 
-            updateOrderType(v)
-           }}
-        />
-        {` ${[triggerPrice, orderType, productType]}`}
-        <div className="flex-col">
-          <Label>Trigger Price</Label>
-          <Input onChange={(e: any) => {
-            updateTriggerPrice(e.target.value)
-          }} type="number" placeholder="Trigger Price" />
-        </div>
+        <div className="grid gap-[6rem] grid-cols-4 m-2">
+          {/* {` ${[triggerPrice, orderType, productType]}`} */}
+          <div className="flex-col items-center flex gap-3">
+            <Label className="lighttxt uppercase">Trigger Price</Label>
+            <Input
+              onChange={(e: any) => {
+                updateTriggerPrice(e.target.value);
+              }}
+              type="number"
+              className="placeholder:text-white bg-transparent text-white border-[1px] border-[#878686]"
+              placeholder="Trigger Price"
+            />
+          </div>
 
-        <div className="flex-col">
-          <Label>Market Protection</Label>
-          <Input type="number" placeholder="10%" />
+          <div className="flex-col items-center flex gap-3">
+            <Label className="lighttxt uppercase">Market Protection</Label>
+            <Input
+              type="number"
+              className="placeholder:text-white bg-transparent text-white border-[1px] border-[#878686]"
+              placeholder="10%"
+            />
+          </div>
+          <div className="flex-col items-center flex gap-3">
+            <Label className="lighttxt uppercase">Prefered SL Pts</Label>
+            <Input
+              type="number"
+              className="placeholder:text-white bg-transparent text-white border-[1px] border-[#878686]"
+              placeholder="Prefered SL Pts"
+            />
+          </div>
+          <div className="flex-col items-center flex gap-3">
+            <Label className="lighttxt uppercase">Prefered Target Pts</Label>
+            <Input
+            
+              type="number"
+              className="placeholder:text-white bg-transparent text-white border-[1px] border-[#878686]"
+              placeholder="Prefered Target Pts"
+            />
+          </div>
         </div>
-        <div className="flex-col">
-          <Label>Prefered SL Pts</Label>
-          <Input type="number" placeholder="Prefered SL Pts" />
+        <div className="grid gap-[12rem] grid-cols-3 m-1 my-2">
+          <div className="flex-col items-center flex gap-3">
+            <Label className="lighttxt uppercase">Qty</Label>
+            <Input
+              className="bg-transparent border-[1px] border-[#878686] placeholder:text-white"
+              onChange={(e: any) => {
+                updateQuantity(e.target.value);
+              }}
+              type="number"
+              placeholder="Qty"
+            />
+          </div>
+          <CoustomSelect
+            options={["Intraday"]}
+            label="Product Type"
+            setChange={(v: any) => {
+              if (v === "Intraday") {
+                updateProductType("D");
+              }
+            }}
+          />
+          <CoustomSelect
+            options={["MARKET", "LIMIT"]}
+            label="Order Type"
+            setChange={(v: any) => {
+              updateOrderType(v);
+            }}
+          />
         </div>
-        <div className="flex-col">
-          <Label>Prefered Target Pts</Label>
-          <Input type="number" placeholder="Prefered Target Pts" />
-        </div>
+        
       </div>
     </>
   );
 }
 
 export default React.memo(Inputs);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
@@ -250,7 +315,7 @@ export default React.memo(Inputs);
 //       }} />
 //       <CoustomSelect options={props.expiryDates} label="Expiry" setChange={(v:any)=>{
 //         props.setExpiry(v)
-//       }} />  
+//       }} />
 
 //         {/* <div className="flex-col">
 //           <Label>Expiry Date</Label>
@@ -259,7 +324,7 @@ export default React.memo(Inputs);
 //       <CoustomSelect options={props.strikePrices} label="Call Strike" setChange={(v:any)=>{
 //         console.log(v);
 //         props.setCallStrike(v)
-//       }} />  
+//       }} />
 
 //         {/* <div className="flex-col">
 //           <Label>Call Strike</Label>
