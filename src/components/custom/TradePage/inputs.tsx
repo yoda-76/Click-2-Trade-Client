@@ -166,8 +166,8 @@ function Inputs() {
             updateOrderType(v)
            }}
         />
-        {` ${[triggerPrice, orderType, productType]}`}
-        <div className="flex-col">
+{/*         {` ${[triggerPrice, orderType, productType]}`}
+        <div className="flex-col"> */}
           <Label>Trigger Price</Label>
           <Input onChange={(e: any) => {
             updateTriggerPrice(e.target.value)
