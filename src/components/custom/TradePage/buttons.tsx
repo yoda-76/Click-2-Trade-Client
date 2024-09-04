@@ -105,7 +105,7 @@ export default function Buttons(props: any) {
           onClick={() => {
             placeOrder("SELL", "call");
           }}
-          className="glassgr gr w-[100px] rounded-full  py-1"
+          className="glassrd  w-[100px] rounded-full  py-1"
         >
           Sell
         </Button>
@@ -113,7 +113,7 @@ export default function Buttons(props: any) {
           onClick={() => {
             placeOrder("BUY", "call");
           }}
-          className=" glassrd rd w-[100px] rounded-full  py-1"
+          className=" glassgr  w-[100px] rounded-full  py-1"
         >
           Buy
         </Button>
@@ -139,7 +139,7 @@ export default function Buttons(props: any) {
         >
           Cancel all orders
         </Button>
-        <Button className="my-1 glassgr text-[#E5E4E2] rounded-full ">
+        <Button className="my-1 glassgr  rounded-full ">
           SL to Cost
         </Button>
       </div>
@@ -148,7 +148,7 @@ export default function Buttons(props: any) {
           onClick={() => {
             placeOrder("SELL", "put");
           }}
-          className="glassgr gr w-[100px] rounded-full  py-1  "
+          className="glassrd  w-[100px] rounded-full  py-1  "
         >
           Sell
         </Button>
@@ -156,9 +156,9 @@ export default function Buttons(props: any) {
           onClick={() => {
             placeOrder("BUY", "put");
           }}
-          className="glassrd rd w-[100px] rounded-full  py-1  "
+          className="glassgr  w-[100px] rounded-full  py-1  "
         >
-          Buy2
+          Buy
         </Button>
       </div>
     </div>
