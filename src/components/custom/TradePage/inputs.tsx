@@ -155,7 +155,7 @@ function Inputs() {
           label="Product Type"
           setChange={(v: any) => { 
             if(v === 'Intraday'){
-              updateProductType('D')
+              updateProductType('I')
             }
            }}
         />
