@@ -37,7 +37,7 @@ function Inputs() {
   
   return (
     <>
-      <div className="grid grid-cols-8 m-1">
+      <div className="grid grid-cols-8 m-1 text-white">
         <CoustomSelect
           options={["NSE_FO"]}
           label="select exchange"
@@ -155,7 +155,7 @@ function Inputs() {
           label="Product Type"
           setChange={(v: any) => { 
             if(v === 'Intraday'){
-              updateProductType('D')
+              updateProductType('I')
             }
            }}
         />
@@ -166,10 +166,10 @@ function Inputs() {
             updateOrderType(v)
            }}
         />
-        {` ${[triggerPrice, orderType, productType]}`}
+        {/* {` ${[triggerPrice, orderType, productType]}`} */}
         <div className="flex-col">
-          <Label>Trigger Price</Label>
-          <Input onChange={(e: any) => {
+          <Label >Trigger Price</Label>
+          <Input className="text-white" onChange={(e: any) => {
             updateTriggerPrice(e.target.value)
           }} type="number" placeholder="Trigger Price" />
         </div>

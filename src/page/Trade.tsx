@@ -151,14 +151,24 @@ export default function Trade() {
       };
       if(typeof ltp === "number"){
         const pnl = Math.trunc(((p.sell_value - p.buy_value) + (p.quantity * ltp * p.multiplier)) * 100) / 100
-        if(sl[p.instrument_token] >=pnl && sl[p.instrument_token] !==0){
+        if(sl[p.instrument_token] >=pnl && sl[p.instrument_token] !==null){
           console.log("squared of, sl hit");
-          updateSl({key: p.instrument_token, value: 0})
-          //squareoff
+          axios.post(`${import.meta.env.VITE_server_url}/api/square-off-single`, {
+            account_id:master.id, account_type:"MASTER", tradingSymbol:p.trading_symbol
+          }).then(()=>{
+            updatePositions()
+          })
+          updateSl({key: p.instrument_token, value: null})
+          // updateMtmSl(null)
         }
-        if(target[p.instrument_token] <=pnl && target[p.instrument_token] !==0){
+        if(target[p.instrument_token] <=pnl && target[p.instrument_token] !==null){
           console.log("squared of, target hit");
-          updateTarget({key: p.instrument_token, value: 0})
+          axios.post(`${import.meta.env.VITE_server_url}/api/square-off-single`, {
+            account_id:master.id, account_type:"MASTER", tradingSymbol:p.trading_symbol
+          }).then(()=>{
+            updatePositions()
+          })
+          updateTarget({key: p.instrument_token, value: null})
           //squareoff
         }
         mtm+=pnl
@@ -174,16 +184,16 @@ export default function Trade() {
     })
     updateMtm(mtm)
     //check mtm sl and target
-    if(mtmSl !== 0 && mtmSl >= mtm){
+    if(mtmSl !== null && mtmSl >= mtm){
       console.log("MTM SL HIT");
       axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
         account_id:master.id, account_type:"MASTER"
       }).then(()=>{
         updatePositions()
       })
-      updateMtmSl(0)
+      updateMtmSl(null)
     }
-    if(mtmTarget !== 0 && mtmTarget <= mtm){
+    if(mtmTarget !== null && mtmTarget <= mtm){
       console.log("MTM TARGET HIT");
       axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
         account_id:master.id, account_type:"MASTER"
@@ -192,14 +202,13 @@ export default function Trade() {
         updatePositions()
         
       })
-      updateMtmTarget(0)
+      updateMtmTarget(null)
     }
     updatePosition(updatedPosition);
-
   }, [feed]);
 
   return (
-    <div>
+    <div className="">
       <Inputs />
       <LtpDisplay/>
       <Buttons

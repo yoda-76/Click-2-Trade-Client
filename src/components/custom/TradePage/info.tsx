@@ -19,7 +19,7 @@ function info() {
   },[selectedTab])
    
   return (
-    <div>
+    <div className='text-white'>
     <Mtm />
     <AccountSelection />
     <TabSelection selectedTab={selectedTab} setSelectedTab={setSelectedTab}/>

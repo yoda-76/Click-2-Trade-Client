@@ -9,8 +9,8 @@ const slStore = (set: any) => ({
     preferedSl:40,
     preferedTarget:80,
     
-    mtmSl:0,
-    mtmTarget:0,
+    mtmSl:null,
+    mtmTarget:null,
     mtmSlIncrement:1,
     mtmTargetIncrement:1,
     mtmPreferedSl:40,
@@ -18,22 +18,22 @@ const slStore = (set: any) => ({
     
     trailingPoints:0,
     mtmTrailingPoints:0,
-    updateMtmSl: (data: number) => {
+    updateMtmSl: (data: number | null) => {
         set(() => ({
             mtmSl: data
         }))
     },
-    updateMtmTarget: (data: number) => {
+    updateMtmTarget: (data: number | null) => {
         set(() => ({
             mtmTarget: data
         }))
     },
-    updateSl: (data: {key:string, value:number}) => {
+    updateSl: (data: {key:string, value:number | null}) => {
         set((state: any) => ({
             sl:{...state.sl, [data.key]:data.value}
         }))
     },
-    updateTarget: (data: {key:string, value:number}) => {
+    updateTarget: (data: {key:string, value:number | null}) => {
         set((state: any) => ({
             target:{...state.target, [data.key]:data.value}
         }))
