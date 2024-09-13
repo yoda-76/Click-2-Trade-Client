@@ -25,7 +25,7 @@ export default function ManageChild() {
   }, [location.search]);
 
   useEffect(() => {
-  axios.post("http://localhost:3000/api/get-child-account-details", {master_u_id: accountId}, {
+  axios.post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, {master_u_id: accountId}, {
     withCredentials: true, // Ensure cookies are sent with the request
   }).then((resp)=>{
        console.log(resp);
@@ -44,7 +44,7 @@ export default function ManageChild() {
         withCredentials: true, // Ensure cookies are sent with the request
       })
       .then(() => {
-        axios.post("http://localhost:3000/api/get-child-account-details", { master_u_id: accountId}, {
+        axios.post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, { master_u_id: accountId}, {
           withCredentials: true, // Ensure cookies are sent with the request
         }).then((resp)=>{
           setChildAccounts(resp.data)
