@@ -2,7 +2,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React from "react";
 import CoustomSelect from "../CoustomSelect";
-import { equitySymbols } from "@/lib/equity-symbols";
 import useOrderParameterStore from "@/store/orderParameterStore";
 import useSymbolStore from "@/store/symbolStore";
 import useOptionsDataStore from "@/store/optionsDataStore";

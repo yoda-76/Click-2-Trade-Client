@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-import React from 'react';
 
 export default function Test() {
   const handleSetCookie = async () => {

@@ -11,10 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import React, { useState } from 'react';
-// import { useDispatch } from "react-redux";
 import {  useNavigate} from "react-router-dom";
-// import { updateSessionReducer } from "../store/reducer";
-import { useCookies } from "react-cookie";
 import useUserStore from "@/store/userStore";
 interface FormValues {
   email: string;
@@ -25,7 +22,6 @@ const Login: React.FC = () => {
   // const dispatch = useDispatch()
   const {updateName, updateEmail, updateVerified} = useUserStore((state)=>({...state}))
   const navigate = useNavigate();
-  const [cookies, setCookie] = useCookies(['token'])
 
   const [formValues, setFormValues] = useState<FormValues>({
     email: '',

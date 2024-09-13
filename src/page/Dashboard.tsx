@@ -12,8 +12,6 @@ import {
 // import { Label } from "@/components/ui/label";
 // import axios from "axios";
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from "react-redux";
-import { deleteSessionReducer, updateSessionReducer } from "../store/reducer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddAccount from "@/components/custom/AddAccount";

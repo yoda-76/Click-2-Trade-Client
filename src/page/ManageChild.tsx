@@ -43,7 +43,7 @@ export default function ManageChild() {
       }, {
         withCredentials: true, // Ensure cookies are sent with the request
       })
-      .then((resp) => {
+      .then(() => {
         axios.post("http://localhost:3000/api/get-child-account-details", { master_u_id: accountId}, {
           withCredentials: true, // Ensure cookies are sent with the request
         }).then((resp)=>{
@@ -64,7 +64,7 @@ export default function ManageChild() {
       }, {
         withCredentials: true, // Ensure cookies are sent with the request
       })
-      .then((resp) => {
+      .then(() => {
         axios.post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, { master_u_id: accountId}, {
           withCredentials: true, // Ensure cookies are sent with the request
         }).then((resp)=>{
