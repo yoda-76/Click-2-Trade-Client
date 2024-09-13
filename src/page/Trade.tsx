@@ -12,6 +12,8 @@ import useSymbolStore from "@/store/symbolStore";
 import usePositionStore from "@/store/positionStore";
 import useMtmStore from "@/store/mtmStore";
 import useSlStore from "@/store/slStore";
+import useUserStore from "@/store/userStore";
+import { useNavigate } from "react-router-dom";
 
 // const SOCKET_SERVER_URL = "http://localhost:3000";
 
@@ -38,7 +40,10 @@ function extractId(input: string): {
 }
 
 export default function Trade() {
-  const {master,updateMaster, updateChild, selected}:{master: any,  selected:string , setSelectedAccount: Function, updateMaster: Function, updateChild: Function} = useAccountStore((state) => ({...state}));
+  const {email} = useUserStore((state)=>({...state}))
+  const navigate = useNavigate()
+
+  const {master,updateMaster, updateChild, selected, setSelectedAccount}:{master: any,  selected:string , setSelectedAccount: Function, updateMaster: Function, updateChild: Function} = useAccountStore((state) => ({...state}));
   const {setOptionsData} = useOptionStore((state) => ({...state}));
   const {updateBaseLTP, updateCallLTP, updatePutLTP}= useLtpStore((state) => ({...state}));
   const {base, call, put} = useSymbolStore((state) => ({...state}));
@@ -46,7 +51,7 @@ export default function Trade() {
   const [feed, setFeed] = useState<any>({});
   const {position, updatePosition}:{position:any[], updatePosition:Function} = usePositionStore((state) => ({...state}));
   const {updateMtm} = useMtmStore((state) => ({...state}));
-  const {sl, target, mtmSl, mtmTarget, updateSl, updateTarget, updateMtmSl, updateMtmTarget}:{sl:any, target:any, mtmSl:any, mtmTarget:any, updateSl:Function, updateTarget:Function, updateMtmSl:Function, updateMtmTarget:Function}  = useSlStore((state) => ({...state}));
+  const {mtmTslBase, updateMtmTslBase, tslBase, updateTslBase, sl, target, mtmSl, mtmTarget, updateSl, updateTarget, updateMtmSl, updateMtmTarget}:{sl:any, target:any, mtmSl:any, mtmTarget:any, updateSl:Function, updateTarget:Function, updateMtmSl:Function, updateMtmTarget:Function, tslBase:any, updateTslBase:Function, mtmTslBase:any, updateMtmTslBase:Function}  = useSlStore((state) => ({...state}));
   // const {selected}:{master: any, child: any[], selected:string , setSelectedAccount: (data: any) => void} = useAccountStore((state) => ({...state}));
     // const {updatePosition}= usePositionStore((state) => ({...state}));
     const updatePositions=async () => {
@@ -54,11 +59,12 @@ export default function Trade() {
 
       try {
         const resp = await axios.post(`${import.meta.env.VITE_server_url}/api/get-positions`, {
-          token: localStorage.getItem("token"),
           account_id: id,
           account_type: type,
+        }, {
+          withCredentials: true, // Ensure cookies are sent with the request
         });
-        console.log("orders fetched", resp.data);
+        // console.log("orders fetched", resp.data);
         updatePosition(resp.data);
       } catch (e) {
         console.log(e);
@@ -73,8 +79,9 @@ export default function Trade() {
       //get-child-account-details
       axios
         .post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, {
-          token: localStorage.getItem("token"),
-          master_id: id,
+          master_u_id: id,
+        }, {
+          withCredentials: true, // Ensure cookies are sent with the request
         })
         .then((resp) => {
           console.log("child;",resp.data);
@@ -82,11 +89,13 @@ export default function Trade() {
         });
       axios
         .post(`${import.meta.env.VITE_server_url}/api/get-account-details`, {
-          token: localStorage.getItem("token"),
-          id: id,
+         master_u_id:id,
+        }, {
+          withCredentials: true, // Ensure cookies are sent with the request
         })
         .then((resp) => {
           updateMaster(resp.data);
+          setSelectedAccount(`MASTER:${resp.data.u_id}`)
         });
       // some await functions
       if (id) {
@@ -100,8 +109,13 @@ export default function Trade() {
   }, [location.search]);
 
   useEffect(() => {
+    if(!email && !localStorage.getItem("email")){
+      navigate("/login")
+    }
     axios
-      .get(`${import.meta.env.VITE_server_url}/api/get-structured-options-data`)
+      .get(`${import.meta.env.VITE_server_url}/api/get-structured-options-data`, {
+        withCredentials: true, // Ensure cookies are sent with the request
+      })
       .then((resp) => {
         setOptionsData(resp.data);
       });
@@ -151,30 +165,48 @@ export default function Trade() {
       };
       if(typeof ltp === "number"){
         const pnl = Math.trunc(((p.sell_value - p.buy_value) + (p.quantity * ltp * p.multiplier)) * 100) / 100
-        if(sl[p.instrument_token] >=pnl && sl[p.instrument_token] !==null){
+
+        if(tslBase[p.instrument_token] && ltp>tslBase[p.instrument_token]){
+          updateSl({key: p.instrument_token, value:sl[p.instrument_token]+(ltp-tslBase[p.instrument_token])})
+          updateTslBase({key: p.instrument_token, value:ltp})
+        }else{
+          // console.log(ltp, tslBase[p.instrument_token]);
+        }
+
+
+
+        if(sl[p.instrument_token] >=ltp && sl[p.instrument_token] !==null){
           console.log("squared of, sl hit");
           axios.post(`${import.meta.env.VITE_server_url}/api/square-off-single`, {
             account_id:master.id, account_type:"MASTER", tradingSymbol:p.trading_symbol
+          }, {
+            withCredentials: true, // Ensure cookies are sent with the request
           }).then(()=>{
             updatePositions()
           })
           updateSl({key: p.instrument_token, value: null})
           // updateMtmSl(null)
         }
-        if(target[p.instrument_token] <=pnl && target[p.instrument_token] !==null){
+        
+        if(target[p.instrument_token] <=ltp && target[p.instrument_token] !==null){
           console.log("squared of, target hit");
           axios.post(`${import.meta.env.VITE_server_url}/api/square-off-single`, {
             account_id:master.id, account_type:"MASTER", tradingSymbol:p.trading_symbol
+          }, {
+            withCredentials: true, // Ensure cookies are sent with the request
           }).then(()=>{
             updatePositions()
           })
           updateTarget({key: p.instrument_token, value: null})
-          //squareoff
+          
+          //indevidual tsl
+          
+          
         }
         mtm+=pnl
         
         
-        return {...p, last_price: `=${ltp}`, pnl: pnl, sl:sl[p.instrument_token], target:target[p.instrument_token]}
+        return {...p, last_price: ltp, pnl: pnl, sl:sl[p.instrument_token], target:target[p.instrument_token]}
       }
       else{
         mtm+=p.pnl
@@ -182,12 +214,22 @@ export default function Trade() {
       }
       // update mtm
     })
+
     updateMtm(mtm)
+
+    if(mtmTslBase && mtm>mtmTslBase){
+      updateMtmSl(mtmSl+(mtm-mtmTslBase))
+      updateMtmTslBase(mtm)
+    }
+
+    //mtm tsl
     //check mtm sl and target
     if(mtmSl !== null && mtmSl >= mtm){
       console.log("MTM SL HIT");
       axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
         account_id:master.id, account_type:"MASTER"
+      }, {
+        withCredentials: true, // Ensure cookies are sent with the request
       }).then(()=>{
         updatePositions()
       })
@@ -197,6 +239,8 @@ export default function Trade() {
       console.log("MTM TARGET HIT");
       axios.post(`${import.meta.env.VITE_server_url}/api/square-off-all`, {
         account_id:master.id, account_type:"MASTER"
+      }, {
+        withCredentials: true, // Ensure cookies are sent with the request
       }).then(()=>{
         // updateMtmSl(0)
         updatePositions()

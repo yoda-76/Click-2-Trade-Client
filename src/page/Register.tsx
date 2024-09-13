@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useState } from 'react';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 // import dotenv from 'dotenv'
 // dotenv.config()
 
@@ -29,6 +30,8 @@ interface FormValues {
 }
 
 const Register: React.FC = () => {
+  const navigate = useNavigate();
+
   const [formValues, setFormValues] = useState<FormValues>({
     name:'',
     email: '',
@@ -50,7 +53,11 @@ const Register: React.FC = () => {
     console.log(formValues);
 
     const response =await axios.post( `${import.meta.env.VITE_server_url}/api/register`,formValues)
-    console.log(response)
+    
+    if(response){
+      console.log(response)
+      navigate('/login');
+    }
      
   };
 
@@ -66,19 +73,19 @@ const Register: React.FC = () => {
           <div className="grid w-full items-center gap-4">
           <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" placeholder="enter your name" onChange={handleChange} />
+              <Input className="text-white" id="name" placeholder="enter your name" onChange={handleChange} />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="enter your email" onChange={handleChange} />
+              <Input className="text-white" id="email" placeholder="enter your email" onChange={handleChange} />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" placeholder="create password" onChange={handleChange}/>
+              <Input className="text-white" id="password" placeholder="create password" onChange={handleChange}/>
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="re_password">Re-enter Password</Label>
-              <Input id="re_password" placeholder="reenter password" onChange={handleChange}/>
+              <Input className="text-white" id="re_password" placeholder="reenter password" onChange={handleChange}/>
             </div>
             {/* <div className="flex flex-col space-y-1.5">
               <Label htmlFor="role">Role</Label>

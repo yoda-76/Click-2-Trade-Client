@@ -17,28 +17,37 @@ import { deleteSessionReducer, updateSessionReducer } from "../store/reducer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddAccount from "@/components/custom/AddAccount";
+import useUserStore from "@/store/userStore";
 
 const Dashboard: React.FC = () => {
+  const {name, email, verified, accounts, updateAccounts, updateEmail, updateName, updateVerified} = useUserStore((state)=>({...state}))
     // const [masterId, setMasterId]= useState("")
     const [currentActiveAccount, setCurrentActiveAccount]= useState("")
     const [addAccountToggle, setAddAccountToggle]= useState(false)
     const navigate = useNavigate()
-    const details = useSelector((state: any)=>state.updateDetails)
-    const dispatch= useDispatch()
+    const [refreshState, setRefreshState] = useState(false)
     useEffect(()=>{
+  console.log("visited dashboard", email, name , verified);
 
-      console.log(details , localStorage.getItem("email"))
-      if(!details.email || !localStorage.getItem("email")){
+      if(!email && !localStorage.getItem("email")){
         navigate("/login")
       }
-    }, [details])
-    useEffect(()=>{
       
-      axios.post(`${import.meta.env.VITE_server_url}/api/get-user-details`, {token: localStorage.getItem("token"), email:details.email}).then((resp)=>{
-        dispatch(updateSessionReducer(resp.data))
+    }, [])
+    useEffect(()=>{
+      if(!email && localStorage.getItem("email")){
+        updateName(localStorage.getItem("name"))
+        updateEmail(localStorage.getItem("email"))
+        updateVerified(localStorage.getItem("verified")==="true"?true:localStorage.getItem("verified")==="false"?false:null)
+      }
+      axios.post(`${import.meta.env.VITE_server_url}/api/get-user-details`, { email }, {
+        withCredentials: true, // Ensure cookies are sent with the request
+      }).then((resp)=>{
+        console.log("user info",resp.data);
+        updateAccounts(resp.data.accounts)
       })
-
-    },[])
+    },[email, refreshState])
+    
 
     // console.log(details.accounts);
     
@@ -63,21 +72,24 @@ const Dashboard: React.FC = () => {
         <CardTitle>Dashboard</CardTitle>
       </CardHeader>
 
-    {addAccountToggle&&<AddAccount/>}
+    {addAccountToggle&&<AddAccount setAddAccountToggle={setAddAccountToggle} refresh={setRefreshState}/>}
     <Button onClick={()=>{setAddAccountToggle(!addAccountToggle)}}>{addAccountToggle?"Back":"Add Account"}</Button>
     </Card>
-    <Button onClick={()=>{
-        dispatch(deleteSessionReducer())
+    <Button onClick={async()=>{
+       axios.post(`${import.meta.env.VITE_server_url}/api/logout`,{},{
+          withCredentials: true, // Ensure cookies are sent with the request
+        })
+        
         localStorage.clear()
+        //clear every state
+        updateEmail(null)
         navigate("/login")
     }}>logout</Button>
-    
-    
-
     </div>
-      {details&&details.accounts.map((a:any)=>{
-        return <div className="bg-orange-500"><h1>{JSON.stringify(a)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=${import.meta.env.VITE_server_url}/auth&state=MASTER:${a.id}`}>Generate Token</a> <Button onClick={()=>{activateAccountToggle(a.id)}}>{currentActiveAccount===a.id?"Deactivate":"Activate"}</Button> <Button onClick={(()=>{tradeNowHandler(a.id)})}>Trade Now</Button> <Button onClick={(()=>{navigate(`/manage-child?id=${a.id}`)})}>Manage Child</Button></div>
+      {accounts[0]&&accounts.map((a:any)=>{
+        return <div className="bg-orange-500"><h1>{JSON.stringify(a)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=${import.meta.env.VITE_server_url}/auth&state=MASTER:${a.u_id}`}>Generate Token</a> <Button onClick={()=>{activateAccountToggle(a.id)}}>{currentActiveAccount===a.id?"Deactivate":"Activate"}</Button> <Button onClick={(()=>{tradeNowHandler(a.u_id)})}>Trade Now</Button> <Button onClick={(()=>{navigate(`/manage-child?id=${a.u_id}`)})}>Manage Child</Button></div>
       })}
+ <p>{refreshState}</p>  {/*only used to rerender */}
     </div> 
   );
 };

@@ -1,16 +1,20 @@
+import { Button } from "@/components/ui/button";
+import useAccountStore from "@/store/accountStore";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function OrderBook(props: any) {
+  const {master}:{master: any} = useAccountStore((state) => ({...state}));
   console.log("orderbook rendered", props);
   const [orders, setOrders] = useState([]);
   useEffect(() => {
     (async () => {
       try {
         const resp = await axios.post(`${import.meta.env.VITE_server_url}/api/get-orders`, {
-          token: localStorage.getItem("token"),
           account_id: props.account_id,
           account_type: props.account_type,
+        }, {
+          withCredentials: true, // Ensure cookies are sent with the request
         });
         console.log("orders fetched", resp.data);
         setOrders(resp.data);
@@ -39,7 +43,7 @@ export default function OrderBook(props: any) {
       </div>
       {orders.map((v: any) => {
         return (
-          <div className="grid grid-cols-12">
+          <div className="grid grid-cols-12 ">
             <div className="break-words">
               {v.tradingsymbol ? v.tradingsymbol : "---"}
             </div>
@@ -63,7 +67,14 @@ export default function OrderBook(props: any) {
             <div className="break-words">
               {v.status_message ? v.status_message : "---"}
             </div>
-            <div>{v.action ? v.action : "Action"}</div>
+            <div>{(v.status==="open"||v.status==="pending")?<div className="flex gap-2"><Button onClick={() => {
+              // console.log(v.order_id);
+              axios.post(`${import.meta.env.VITE_server_url}/api/cancel-order`, { order_id: v.order_id, master_u_id: master.u_id}, {
+                withCredentials: true, // Ensure cookies are sent with the request
+              })
+            }}>Cancel</Button> <Button onClick={() => {
+              
+            }}>Modify</Button></div>:("---")}</div>
           </div>
           // <div key={i}>
           //   {v.tradingsymbol}

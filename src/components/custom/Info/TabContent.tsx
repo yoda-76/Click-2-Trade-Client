@@ -32,7 +32,7 @@ export default function TabContent(props:any) {
   return (<>
 
    {/* {props.selected==="trades" && <Trades/>} */}
-     {props.selectedTab=="orders" && <OrderBook account_id={id} account_type={type} />}
+     {props.selectedTab=="orders" && <OrderBook  account_id={id} account_type={type} />}
      {props.selectedTab=="funds" && <Funds account_id={id} account_type={type} />}
      {props.selectedTab==="positions" && <Positions />}
      </>

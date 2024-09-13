@@ -7,7 +7,7 @@ export default function   AccountSelection() {
     console.log(child);
   return (
     <div className='flex justify-between'>
-        <div onClick={()=>{setSelectedAccount(`MASTER:${master.id}`)}}>{"MASTER"}</div>
+        <div onClick={()=>{setSelectedAccount(`MASTER:${master.u_id}`)}}>{"MASTER"}</div>
         {
           child&&child.map((v:any,i:number)=>{
             console.log(v);

@@ -1,15 +1,22 @@
+import { Button } from "@/components/ui/button";
+import useAccountStore from "@/store/accountStore";
 import usePositionStore from "@/store/positionStore";
 import useSlStore from "@/store/slStore";
+import axios from "axios";
 import { useState } from "react";
 
 export default function Positions() {
   const { position } = usePositionStore((state) => ({ ...state }));
-  const { updateSl, updateTarget } = useSlStore((state) => ({
+  const { updateTslBase,updateSl, updateTarget, increaseSl, decreaseSl, increaseTarget, decreaseTarget } = useSlStore((state) => ({
     ...state,
   }));
+  const {master}:{master: any} = useAccountStore((state) => ({...state}));
   
-  const [slValue, setSlValue] = useState(0);
-  const [targetValue, setTargetValue] = useState(0);
+  const [slValue, setSlValue] = useState<any>();
+  const [targetValue, setTargetValue] = useState<any>();
+  const slToCostHandeler = (key:string, value:number)=>{
+    updateSl({ key ,value });
+  }
   return (
     <>
       <div className="grid grid-cols-12 bg-gray-300">
@@ -21,6 +28,8 @@ export default function Positions() {
         <div>set SL</div>
         <div>Target</div>
         <div>set Target</div>
+        <div>TSL</div>
+        <div>s2c</div>
         <div>sell price</div>
         <div>buy price</div>
         <div>multiplier</div>
@@ -37,8 +46,13 @@ export default function Positions() {
             <div>{v.quantity ? v.quantity : "Qty"}</div>
             <div>{v.pnl}</div>
             <div>{v.last_price ? v.last_price : "LTP"}</div>
-            <div>{v.sl ? v.sl : "--"}</div>
+            <div className="grid grid-cols-3">
+              <div className="hover:cursor-pointer hover:bg-black" onClick={() => decreaseSl({ key: v.instrument_token})}>-</div>
+              <div>{v.sl ? v.sl : "--"}</div>
+              <div className="hover:cursor-pointer hover:bg-black" onClick={() => increaseSl({ key: v.instrument_token })}>+</div>
+            </div>
             <input
+              className="text-black"
               type="number"
               placeholder="set SL"
               value={slValue}
@@ -51,8 +65,13 @@ export default function Positions() {
                 }
               }}
             />
-            <div>{v.target ? v.target : "--"}</div>
+            <div className="grid grid-cols-3">
+              <div className="hover:cursor-pointer hover:bg-black" onClick={() => decreaseTarget({ key: v.instrument_token})}>-</div>
+              <div>{v.target ? v.target : "--"}</div>
+              <div className="hover:cursor-pointer hover:bg-black" onClick={() => increaseTarget({ key: v.instrument_token })}>+</div>
+            </div>
             <input
+              className="text-black"
               type="number"
               placeholder="set Target"
               value={targetValue}
@@ -65,11 +84,29 @@ export default function Positions() {
                 }
               }}
             />
+            <div>{v.tsl ? <Button onClick={()=>{
+              updateTslBase({key: v.instrument_token, value: null})
+            }}>turn off</Button> : <Button onClick={()=>{
+              updateTslBase({key: v.instrument_token, value: v.last_price})
+              console.log("tsl set");
+            }}>turn on</Button>}</div>
+            <div><Button onClick={()=>{
+              slToCostHandeler(v.instrument_token,v.buy_price)
+            }}>Sl 2 Cost</Button></div>
             <div>{v.sell_price ? v.sell_price : "sell price"}</div>
             <div>{v.buy_price ? v.buy_price : "buy price"}</div>
             <div>{v.multiplier ? v.multiplier : "Multiplier"}</div>
 
-            <div>{v.action ? v.action : "Action"}</div>
+            {v.quantity!=0?<Button onClick={() => {
+              //call square off single api
+              axios.post("http://localhost:3000/api/square-off-single", {
+                account_id: master.u_id,
+                account_type:"MASTER",
+                tradingSymbol: v.trading_symbol,
+              }, {
+                withCredentials: true, // Ensure cookies are sent with the request
+              })
+            }}>Exit</Button>:<div>--</div>}
           </div>
         );
       })}

@@ -25,7 +25,9 @@ export default function ManageChild() {
   }, [location.search]);
 
   useEffect(() => {
-  axios.post("http://localhost:3000/api/get-child-account-details", {token: localStorage.getItem("token"), master_id: accountId}).then((resp)=>{
+  axios.post("http://localhost:3000/api/get-child-account-details", {master_u_id: accountId}, {
+    withCredentials: true, // Ensure cookies are sent with the request
+  }).then((resp)=>{
        console.log(resp);
        setChildAccounts(resp.data)
    })   
@@ -35,14 +37,16 @@ export default function ManageChild() {
     // add try catch
     axios
       .post("http://localhost:3000/api/update-multiplier", {
-        token: localStorage.getItem("token"),
-        id: id,
+        
+        child_u_id: id,
         multiplier: multiplier,
+      }, {
+        withCredentials: true, // Ensure cookies are sent with the request
       })
       .then((resp) => {
-        console.log(resp);
-        axios.post("http://localhost:3000/api/get-child-account-details", {token: localStorage.getItem("token"), master_id: accountId}).then((resp)=>{
-          console.log(resp);
+        axios.post("http://localhost:3000/api/get-child-account-details", { master_u_id: accountId}, {
+          withCredentials: true, // Ensure cookies are sent with the request
+        }).then((resp)=>{
           setChildAccounts(resp.data)
       })   
       })
@@ -55,14 +59,15 @@ export default function ManageChild() {
     // add try catch
     axios
       .post(`${import.meta.env.VITE_server_url}/api/toggle-active`, {
-        token: localStorage.getItem("token"),
-        id: id,
+        child_u_id: id,
         status
+      }, {
+        withCredentials: true, // Ensure cookies are sent with the request
       })
       .then((resp) => {
-        console.log(resp);
-        axios.post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, {token: localStorage.getItem("token"), master_id: accountId}).then((resp)=>{
-          console.log(resp);
+        axios.post(`${import.meta.env.VITE_server_url}/api/get-child-account-details`, { master_u_id: accountId}, {
+          withCredentials: true, // Ensure cookies are sent with the request
+        }).then((resp)=>{
           setChildAccounts(resp.data)
       })   
       })
@@ -70,16 +75,12 @@ export default function ManageChild() {
         console.log(err);
       });
   }
-
-  // const [cookies, setCookie, removeCookie] = useCookies(['token']);
-  // console.log("Sdf",cookies);
-
   return (
     <div>
     <div>
       {childAccounts&&childAccounts.map((a:any)=>{
         return (
-            <div className="bg-orange-500 flex justify-around"><h1>{JSON.stringify(a.id)}</h1> <h1>{JSON.stringify(a.name_tag)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=${import.meta.env.VITE_server_url}/auth&state=CHILD:${a.id}`}>Generate Token</a> <span>{a.last_token_generated_at}</span> <div className="bg-cyan-600"><Button onClick={()=>changeMultiplier(a.id, a.multiplier+1)} >+</Button>{a.multiplier}<Button onClick={()=>changeMultiplier(a.id, a.multiplier-1)} >-</Button> </div><Button className={a.active?"bg-green-600":"bg-red-600"} onClick={()=>toggleActive(a.id, !a.active)}>{!a.active?"Activate":"Deactivate"}</Button></div>
+            <div className="bg-orange-500 flex justify-around"><h1>{JSON.stringify(a.u_id)}</h1> <h1>{JSON.stringify(a.name_tag)}</h1> <a className= "p-2 mx-1 h-fit rounded-md text-white font-medium font bg-cyan-600 " target="blank" href={`https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id=${a.key}&redirect_uri=${import.meta.env.VITE_server_url}/auth&state=CHILD:${a.u_id}`}>Generate Token</a> <span>{a.last_token_generated_at}</span> <div className="bg-cyan-600"><Button onClick={()=>changeMultiplier(a.u_id, a.multiplier+1)} >+</Button>{a.multiplier}<Button onClick={()=>changeMultiplier(a.u_id, a.multiplier-1)} >-</Button> </div><Button className={a.active?"bg-green-600":"bg-red-600"} onClick={()=>toggleActive(a.u_id, !a.active)}>{!a.active?"Activate":"Deactivate"}</Button></div>
         )
       })}
     </div> 

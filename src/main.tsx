@@ -10,6 +10,7 @@ import Dashboard from "./page/Dashboard.tsx";
 import Trade from "./page/Trade.tsx";
 import ManageChild from "./page/ManageChild.tsx";
 import { CookiesProvider } from 'react-cookie'
+import Test from "./page/Test.tsx";
 // import dotenv from 'dotenv'
 // dotenv.config()
 const router = createBrowserRouter([
@@ -58,6 +59,14 @@ const router = createBrowserRouter([
     element: (
       <Provider store={store}>
         <ManageChild />
+      </Provider>
+    ),
+  },
+  {
+    path: "test",
+    element: (
+      <Provider store={store}>
+        <Test />
       </Provider>
     ),
   }

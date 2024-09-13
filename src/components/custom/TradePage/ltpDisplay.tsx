@@ -10,7 +10,7 @@ export default function LtpDisplay() {
       <div className="flex-col flex  items-start">
         <div className=" flex  flex-col ">
           Symbol : <div>{call.symbol}</div>
-          Key: <div>{call.key}</div>
+          {/* Key: <div>{call.key}</div> */}
         </div>
         <div className=" flex  ">
           LTP : <div>{callLTP}</div>
@@ -26,7 +26,7 @@ export default function LtpDisplay() {
       <div className="flex flex-col  items-end">
         <div className=" flex flex-col">
           Symbol : <div>{put.symbol}</div>
-          Key: <div>{put.key}</div>
+          {/* Key: <div>{put.key}</div> */}
         </div>
         <div className=" flex">
           LTP : <div>{putLTP}</div>

@@ -43,8 +43,40 @@ function Inputs() {
           label="select exchange"
           setChange={(v: any) => { console.log(v); }}
         />
-        <CoustomSelect
+        {/* <CoustomSelect
           options={["NIFTY", "BANKNIFTY", "FINNIFTY",...equitySymbols]}
+          label="Index"
+          setChange={(v: any) => {
+            var newBase={symbol:"", key:""}
+            if(v === "NIFTY" || v === "BANKNIFTY" || v === "FINNIFTY"){
+              
+              newBase = (v === "NIFTY"
+                ? { symbol: "NIFTY", key: "NSE_INDEX|Nifty 50" }
+                : v === "BANKNIFTY"
+                ? { symbol: "BANKNIFTY", key: "NSE_INDEX|Nifty Bank" }
+                : { symbol: "FINNIFTY", key: "NSE_INDEX|Nifty Fin Service" })
+              updateBase(newBase);
+              
+            }else{
+                 
+                  newBase={ symbol: v, key: optionsData.data.EQUITY[v].instrument_key }
+                  updateBase(newBase);
+            } 
+            let tempExpiryDates: string[] = [];
+              Object.keys(optionsData.data[newBase.symbol]).map((op) => {
+              const result = extractExpiryAndStrike(op);
+              if (!tempExpiryDates.includes(result.expiryDate))
+                  tempExpiryDates.push(result.expiryDate);
+              });
+              tempExpiryDates.sort((date1: string, date2: string) => new Date(date1).getTime() - new Date(date2).getTime());
+              updateExpiries(tempExpiryDates);
+              updateStrikes([]);
+              updateCallLTP(0);
+              updatePutLTP(0);
+          }}
+        /> */}
+         <CoustomSelect
+          options={["NIFTY", "BANKNIFTY", "FINNIFTY"]}
           label="Index"
           setChange={(v: any) => {
             var newBase={symbol:"", key:""}
