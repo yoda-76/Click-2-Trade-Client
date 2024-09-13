@@ -5,7 +5,7 @@ export default function Test() {
   const handleSetCookie = async () => {
 
     try {
-      const response = await axios.post('http://localhost:3000/set-cookies', {}, {
+      const response = await axios.post(`${import.meta.env.VITE_server_url}/set-cookies`, {}, {
         withCredentials: true, // Ensure cookies are sent with the request
       });
       console.log(response.data.message);
@@ -16,7 +16,7 @@ export default function Test() {
 
   const handleGetCookie = async () => {
     try {
-          const response = await axios.post('http://localhost:3000/get-cookies', {}, {
+          const response = await axios.post(`${import.meta.env.VITE_server_url}/get-cookies`, {}, {
             withCredentials: true, // Ensure cookies are sent with the request
           });
       console.log('Cookies:', response.data.message);

@@ -36,7 +36,7 @@ export default function ManageChild() {
   const changeMultiplier = (id: string, multiplier: number) => {
     // add try catch
     axios
-      .post("http://localhost:3000/api/update-multiplier", {
+      .post(`${import.meta.env.VITE_server_url}/api/update-multiplier`, {
         
         child_u_id: id,
         multiplier: multiplier,

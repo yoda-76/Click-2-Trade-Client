@@ -99,7 +99,7 @@ export default function Positions() {
 
             {v.quantity!=0?<Button onClick={() => {
               //call square off single api
-              axios.post("http://localhost:3000/api/square-off-single", {
+              axios.post(`${import.meta.env.VITE_server_url}/api/square-off-single`, {
                 account_id: master.u_id,
                 account_type:"MASTER",
                 tradingSymbol: v.trading_symbol,
