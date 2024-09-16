@@ -7,20 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useState } from 'react';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-// import dotenv from 'dotenv'
-// dotenv.config()
 
 interface FormValues {
   name : string
@@ -31,7 +22,6 @@ interface FormValues {
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-
   const [formValues, setFormValues] = useState<FormValues>({
     name:'',
     email: '',
@@ -50,8 +40,6 @@ const Register: React.FC = () => {
   const handleSubmit =  async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission logic here
-    console.log(formValues);
-
     const response =await axios.post( `${import.meta.env.VITE_server_url}/api/register`,formValues)
     
     if(response){
@@ -62,7 +50,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center pt-14">
        <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>Register</CardTitle>
@@ -87,23 +75,6 @@ const Register: React.FC = () => {
               <Label htmlFor="re_password">Re-enter Password</Label>
               <Input className="text-white" id="re_password" placeholder="reenter password" onChange={handleChange}/>
             </div>
-            {/* <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="role">Role</Label>
-              <Select onValueChange={(value)=>{
-                setFormValues({
-                  ...formValues,
-                  role: value
-                });
-              }}>
-                <SelectTrigger id="role">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="MASTER">Master</SelectItem>
-                  <SelectItem value="CHILD">Child</SelectItem>
-                </SelectContent>
-              </Select>
-            </div> */}
           </div>
       </CardContent>
       <CardFooter className="flex justify-around">

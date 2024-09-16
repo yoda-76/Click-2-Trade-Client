@@ -6,13 +6,13 @@ export default function   AccountSelection() {
 
     console.log(child);
   return (
-    <div className='flex justify-between'>
-        <div onClick={()=>{setSelectedAccount(`MASTER:${master.u_id}`)}}>{"MASTER"}</div>
+    <div className='flex gap-2 pt-1'>
+        <div className='w-20 border-2 px-2 py-1 rounded-sm border-white' onClick={()=>{setSelectedAccount(`MASTER:${master.u_id}`)}}>{"MASTER"}</div>
         {
           child&&child.map((v:any,i:number)=>{
             console.log(v);
             if(v.active)return (
-              <div key={i} onClick={()=>{
+              <div className='w-20 border-2 px-2 py-1 rounded-sm border-amber-300 text-amber-300' key={i} onClick={()=>{
                 setSelectedAccount(`CHILD:${v.id}`)
               }} >{v.name_tag}</div>
             )

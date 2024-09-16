@@ -4,6 +4,7 @@ import OrderBook from './OrderBook'
 import Funds from './Funds';
 import Positions from './Positions';
 import useAccountStore from '@/store/accountStore';
+import Trades from './Trades';
 function extractId(input: string): {
     type: "MASTER" | "CHILD" | null;
     id: string | null;
@@ -31,7 +32,7 @@ export default function TabContent(props:any) {
     const {type, id} = extractId(selected)
   return (<>
 
-   {/* {props.selected==="trades" && <Trades/>} */}
+   {props.selected==="trades" && <Trades/>}
      {props.selectedTab=="orders" && <OrderBook  account_id={id} account_type={type} />}
      {props.selectedTab=="funds" && <Funds account_id={id} account_type={type} />}
      {props.selectedTab==="positions" && <Positions />}

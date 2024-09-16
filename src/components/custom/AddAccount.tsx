@@ -76,15 +76,16 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
   }, [formValues]);
 
   return (
-    <div>
-      <Card className="w-[350px]">
+    <div className="w-[80%] p-2">
+      <Card >
         <CardHeader>
           <CardTitle>Add Account</CardTitle>
           {/* <CardDescription>Create your account</CardDescription> */}
         </CardHeader>
         <form onSubmit={handleSubmit}>
+          <div className="flex flex-col">
           <CardContent>
-            <div className="grid w-full items-center gap-4">
+            <div className="w-full grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name_tag">Name Tag</Label>
                 <Input className="text-white"
@@ -132,9 +133,9 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
                   </SelectTrigger>
                   <SelectContent position="popper">
                     <SelectItem value="UPSTOCKS">Upstocks</SelectItem>
-                    <SelectItem value="DHAN">Dhan</SelectItem>
+                    {/* <SelectItem value="DHAN">Dhan</SelectItem>
                     <SelectItem value="ANGEL">Angel</SelectItem>
-                    <SelectItem value="ESPRESSO">Espresso</SelectItem>
+                    <SelectItem value="ESPRESSO">Espresso</SelectItem> */}
                   </SelectContent>
                 </Select>
               </div>
@@ -187,8 +188,11 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
             </div>
           </CardContent>
           <CardFooter className="flex justify-around">
+            <Button onClick={() => props.setAddAccountToggle((prev:boolean)=>!prev)}>Back</Button>
             <Button type="submit">Submit</Button>
+
           </CardFooter>
+          </div>
         </form>
         {/* <a className="text-cyan-800 px-2 py-1" href="/login">Already have an account?</a> */}
       </Card>

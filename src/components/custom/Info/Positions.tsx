@@ -19,7 +19,7 @@ export default function Positions() {
   }
   return (
     <>
-      <div className="grid grid-cols-12 bg-gray-300">
+      <div className="grid grid-cols-12 ">
         <div>Symbol Name</div>
         <div>Qty</div>
         <div>pnl</div>
@@ -30,12 +30,10 @@ export default function Positions() {
         <div>set Target</div>
         <div>TSL</div>
         <div>s2c</div>
-        <div>sell price</div>
         <div>buy price</div>
-        <div>multiplier</div>
-
         <div>Action</div>
       </div>
+      <div className="bg-white w-[100%] p-[0.5px]"/>
       {position.map((v: any) => {
         // console.log(v);
         return (
@@ -94,8 +92,6 @@ export default function Positions() {
               slToCostHandeler(v.instrument_token,v.buy_price)
             }}>Sl 2 Cost</Button></div>
             <div>{v.sell_price ? v.sell_price : "sell price"}</div>
-            <div>{v.buy_price ? v.buy_price : "buy price"}</div>
-            <div>{v.multiplier ? v.multiplier : "Multiplier"}</div>
 
             {v.quantity!=0?<Button onClick={() => {
               //call square off single api

@@ -117,6 +117,7 @@ export default function Trade() {
         withCredentials: true, // Ensure cookies are sent with the request
       })
       .then((resp) => {
+        // console.log(resp.data);
         setOptionsData(resp.data);
       });
 
@@ -135,25 +136,15 @@ export default function Trade() {
 
   useEffect(() => {
     var newBaseLTP = feed[base?.key]?.ltpc.ltp;
-    // try {
-    //    newBaseLTP = feed[base?.key]?.ff.indexFF.ltpc.ltp;
-    // } catch (error) {
-    //    newBaseLTP = feed[base?.key]?.ff.marketFF.ltpc.ltp;
-    // }
-
+   
     newBaseLTP && updateBaseLTP(newBaseLTP);
     if(feed[call.key]){
-      // updateCallLTP(feed[call.key]?.ff.marketFF.ltpc.cp);
       updateCallLTP(feed[call.key]?.ltpc.ltp);
         }
     if(feed[put.key]){
-      // updatePutLTP(feed[put.key]?.ff.marketFF.ltpc.cp);
       updatePutLTP(feed[put.key]?.ltpc.ltp);
 
         }
-    // feed[call.key] && updateCallLTP(feed[call.key]?.ff.marketFF.ltpc.cp);
-    // feed[put.key] && updatePutLTP(feed[put.key]?.ff.marketFF.ltpc.cp);
-  
     //maintaning pnl
     var mtm = 0
     const updatedPosition = position.map(p=>{
@@ -169,8 +160,6 @@ export default function Trade() {
         if(tslBase[p.instrument_token] && ltp>tslBase[p.instrument_token]){
           updateSl({key: p.instrument_token, value:sl[p.instrument_token]+(ltp-tslBase[p.instrument_token])})
           updateTslBase({key: p.instrument_token, value:ltp})
-        }else{
-          // console.log(ltp, tslBase[p.instrument_token]);
         }
 
 
@@ -185,7 +174,6 @@ export default function Trade() {
             updatePositions()
           })
           updateSl({key: p.instrument_token, value: null})
-          // updateMtmSl(null)
         }
         
         if(target[p.instrument_token] <=ltp && target[p.instrument_token] !==null){
@@ -198,21 +186,14 @@ export default function Trade() {
             updatePositions()
           })
           updateTarget({key: p.instrument_token, value: null})
-          
-          //indevidual tsl
-          
-          
         }
         mtm+=pnl
-        
-        
         return {...p, last_price: ltp, pnl: pnl, sl:sl[p.instrument_token], target:target[p.instrument_token]}
       }
       else{
         mtm+=p.pnl
         return p
       }
-      // update mtm
     })
 
     updateMtm(mtm)

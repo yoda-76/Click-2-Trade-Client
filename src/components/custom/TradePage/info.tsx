@@ -19,7 +19,7 @@ function info() {
   },[selectedTab])
    
   return (
-    <div className='text-white'>
+    <div className='text-white flex flex-col'>
     <Mtm />
     <AccountSelection />
     <TabSelection selectedTab={selectedTab} setSelectedTab={setSelectedTab}/>

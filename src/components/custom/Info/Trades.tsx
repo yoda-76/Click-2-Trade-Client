@@ -3,8 +3,8 @@ import useAccountStore from "@/store/accountStore";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function OrderBook(props: any) {
-  const {master}:{master: any} = useAccountStore((state) => ({...state}));
+export default function Trades(props: any) {
+  const {master}:{master: any, selected:string} = useAccountStore((state) => ({...state}));
   console.log("orderbook rendered", props);
   const [orders, setOrders] = useState([]);
   useEffect(() => {
@@ -78,21 +78,6 @@ export default function OrderBook(props: any) {
               
             }}>Modify</Button></div>:("---")}</div>
           </div>
-          // <div key={i}>
-          //   {v.tradingsymbol}
-          //   {v.order_type}
-          //   {v.transaction_type}
-          //   {v.quantity}
-          //   {"v.rem_qty"}
-          //   {"v.order_price"}
-          //   {"v.traded_price"}
-          //   {"v.triggered_price"}
-          //   {v.status}
-          //   {v.order_timestamp}
-          //   {v.order_id}
-          //   {v.status_message}
-          //   {"v.action"}
-          // </div>
         );
       })}
     </>
