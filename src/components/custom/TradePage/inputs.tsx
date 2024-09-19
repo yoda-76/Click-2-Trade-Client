@@ -44,8 +44,8 @@ function Inputs() {
   }
 
   const {preferedSl, preferedTarget, updatePreferedSl, updatePreferedTarget} = useSlStore((state) => ({...state}));
-  const [preferedSlState, setPreferedSlState] = useState(preferedSl);
-  const [preferedTargetState, setPreferedTargetState] = useState(preferedTarget);
+  const [preferedSlState, setPreferedSlState] = useState<number|null>(preferedSl);
+  const [preferedTargetState, setPreferedTargetState] = useState<number|null>(preferedTarget);
   
   const [quantityList, setQuantityList] = useState<Quantity[]>([]);
 
@@ -157,7 +157,7 @@ function Inputs() {
         </div> */}
         <div className="flex-col">
           <Label>Prefered SL Pts: {preferedSl}</Label>
-          <Input type="number" value={preferedSlState} placeholder="Prefered SL Pts" 
+          <Input type="number" value={preferedSlState?preferedSlState:0} placeholder="Prefered SL Pts" 
           onChange={(e) => {
             setPreferedSlState(Number(e.target.value));
           }}
@@ -171,7 +171,7 @@ function Inputs() {
         </div>
         <div className="flex-col">
           <Label>Prefered Target Pts: {preferedTarget}</Label>
-          <Input type="number" value={preferedTargetState} onChange={(e) => {setPreferedTargetState(Number(e.target.value))}} onKeyDown={(e) => {if (e.key === "Enter") {
+          <Input type="number" value={preferedTargetState?preferedTargetState:0} onChange={(e) => {setPreferedTargetState(Number(e.target.value))}} onKeyDown={(e) => {if (e.key === "Enter") {
             console.log("preferedTarget",master);
             axios.post(`${import.meta.env.VITE_server_url}/api/update-prefrences-target`, { account_id: master.u_id, target: preferedTargetState },{withCredentials: true,})
             updatePreferedTarget(preferedTargetState)

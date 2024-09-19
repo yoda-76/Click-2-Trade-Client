@@ -21,12 +21,12 @@ const slStore = (set: any) => ({
     trailingPoints:0,
     mtmTrailingPoints:0,
 
-    updatePreferedTarget: (data: number) => {
+    updatePreferedTarget: (data: number|null) => {
         set(() => ({
             preferedTarget: data
         }))
     },
-    updatePreferedSl: (data: number) => {
+    updatePreferedSl: (data: number|null) => {
         set(() => ({
             preferedSl: data
         }))
