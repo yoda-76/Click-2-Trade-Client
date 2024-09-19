@@ -7,8 +7,8 @@ const slStore = (set: any) => ({
     tslBase:{},
     slIncrement:1,
     targetIncrement:1,
-    preferedSl:40,
-    preferedTarget:100,
+    preferedSl:null,
+    preferedTarget:null,
     
     mtmTslBase:null,
     mtmSl:null,

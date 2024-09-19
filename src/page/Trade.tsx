@@ -51,7 +51,7 @@ export default function Trade() {
   const [feed, setFeed] = useState<any>({});
   const {position, updatePosition}:{position:any[], updatePosition:Function} = usePositionStore((state) => ({...state}));
   const {updateMtm} = useMtmStore((state) => ({...state}));
-  const {preferedSl, preferedTarget, updatePreferedSl, updatePreferedTarget, mtmTslBase, updateMtmTslBase, tslBase, updateTslBase, sl, target, mtmSl, mtmTarget, updateSl, updateTarget, updateMtmSl, updateMtmTarget}:{sl:any, target:any, mtmSl:any, mtmTarget:any, preferedSl:number, preferedTarget:number, updatePreferedSl:Function, updatePreferedTarget:Function, updateSl:Function, updateTarget:Function, updateMtmSl:Function, updateMtmTarget:Function, tslBase:any, updateTslBase:Function, mtmTslBase:any, updateMtmTslBase:Function}  = useSlStore((state) => ({...state}));
+  const {preferedSl, preferedTarget, updatePreferedSl, updatePreferedTarget, mtmTslBase, updateMtmTslBase, tslBase, updateTslBase, sl, target, mtmSl, mtmTarget, updateSl, updateTarget, updateMtmSl, updateMtmTarget}:{sl:any, target:any, mtmSl:any, mtmTarget:any, preferedSl:number|null, preferedTarget:number|null, updatePreferedSl:Function, updatePreferedTarget:Function, updateSl:Function, updateTarget:Function, updateMtmSl:Function, updateMtmTarget:Function, tslBase:any, updateTslBase:Function, mtmTslBase:any, updateMtmTslBase:Function}  = useSlStore((state) => ({...state}));
   // const {selected}:{master: any, child: any[], selected:string , setSelectedAccount: (data: any) => void} = useAccountStore((state) => ({...state}));
     // const {updatePosition}= usePositionStore((state) => ({...state}));
     const updatePositions=async () => {
@@ -164,10 +164,10 @@ export default function Trade() {
         ltp = feed[p.instrument_token]?.ltpc.ltp;
       };
       if(typeof ltp === "number"){
-        if(!sl[p.instrument_token]){
+        if(!sl[p.instrument_token] && preferedSl){
           updateSl({key: p.instrument_token, value: ltp-preferedSl})
         }
-        if(!target[p.instrument_token]){
+        if(!target[p.instrument_token] && preferedTarget){
           updateTarget({key: p.instrument_token, value: ltp+preferedTarget})
         }
         const pnl = Math.trunc(((p.sell_value - p.buy_value) + (p.quantity * ltp * p.multiplier)) * 100) / 100;
