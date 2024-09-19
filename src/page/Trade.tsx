@@ -51,7 +51,7 @@ export default function Trade() {
   const [feed, setFeed] = useState<any>({});
   const {position, updatePosition}:{position:any[], updatePosition:Function} = usePositionStore((state) => ({...state}));
   const {updateMtm} = useMtmStore((state) => ({...state}));
-  const {mtmTslBase, updateMtmTslBase, tslBase, updateTslBase, sl, target, mtmSl, mtmTarget, updateSl, updateTarget, updateMtmSl, updateMtmTarget}:{sl:any, target:any, mtmSl:any, mtmTarget:any, updateSl:Function, updateTarget:Function, updateMtmSl:Function, updateMtmTarget:Function, tslBase:any, updateTslBase:Function, mtmTslBase:any, updateMtmTslBase:Function}  = useSlStore((state) => ({...state}));
+  const {preferedSl, preferedTarget, updatePreferedSl, updatePreferedTarget, mtmTslBase, updateMtmTslBase, tslBase, updateTslBase, sl, target, mtmSl, mtmTarget, updateSl, updateTarget, updateMtmSl, updateMtmTarget}:{sl:any, target:any, mtmSl:any, mtmTarget:any, preferedSl:number, preferedTarget:number, updatePreferedSl:Function, updatePreferedTarget:Function, updateSl:Function, updateTarget:Function, updateMtmSl:Function, updateMtmTarget:Function, tslBase:any, updateTslBase:Function, mtmTslBase:any, updateMtmTslBase:Function}  = useSlStore((state) => ({...state}));
   // const {selected}:{master: any, child: any[], selected:string , setSelectedAccount: (data: any) => void} = useAccountStore((state) => ({...state}));
     // const {updatePosition}= usePositionStore((state) => ({...state}));
     const updatePositions=async () => {
@@ -87,6 +87,7 @@ export default function Trade() {
           console.log("child;",resp.data);
           updateChild(resp.data);
         });
+
       axios
         .post(`${import.meta.env.VITE_server_url}/api/get-account-details`, {
          master_u_id:id,
@@ -97,6 +98,12 @@ export default function Trade() {
           updateMaster(resp.data);
           setSelectedAccount(`MASTER:${resp.data.u_id}`)
         });
+
+        axios.post(`${import.meta.env.VITE_server_url}/api/get-prefrences`, { account_id: id },{withCredentials: true,}).then((resp) => {
+          console.log("prefrences: ",resp.data);
+          updatePreferedSl(resp.data.stoploss)
+          updatePreferedTarget(resp.data.target)
+        })
       // some await functions
       if (id) {
         // For example, fetch some data with the accountId
@@ -120,6 +127,8 @@ export default function Trade() {
         // console.log(resp.data);
         setOptionsData(resp.data);
       });
+
+      
 
     const socket = io(import.meta.env.VITE_server_url);
     socket.emit("new-user", { test: 123 });
@@ -155,7 +164,13 @@ export default function Trade() {
         ltp = feed[p.instrument_token]?.ltpc.ltp;
       };
       if(typeof ltp === "number"){
-        const pnl = Math.trunc(((p.sell_value - p.buy_value) + (p.quantity * ltp * p.multiplier)) * 100) / 100
+        if(!sl[p.instrument_token]){
+          updateSl({key: p.instrument_token, value: ltp-preferedSl})
+        }
+        if(!target[p.instrument_token]){
+          updateTarget({key: p.instrument_token, value: ltp+preferedTarget})
+        }
+        const pnl = Math.trunc(((p.sell_value - p.buy_value) + (p.quantity * ltp * p.multiplier)) * 100) / 100;
 
         if(tslBase[p.instrument_token] && ltp>tslBase[p.instrument_token]){
           updateSl({key: p.instrument_token, value:sl[p.instrument_token]+(ltp-tslBase[p.instrument_token])})

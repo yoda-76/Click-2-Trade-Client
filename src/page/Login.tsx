@@ -68,7 +68,7 @@ const Login: React.FC = () => {
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="password">Password</Label>
-              <Input className="text-white" id="password" placeholder="create password" onChange={handleChange}/>
+              <Input className="text-white" type="password" id="password" placeholder="create password" onChange={handleChange}/>
             </div>
           </div>
       </CardContent>

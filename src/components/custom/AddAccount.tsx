@@ -54,16 +54,22 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission logic here
-    console.log(formValues);
-    const response = await axios.post(
-      `${import.meta.env.VITE_server_url}/api/add-account`,
-      formValues, {
-        withCredentials: true, // Ensure cookies are sent with the request
-      }
-    );
-    console.log(response);
-    props.refresh((prev:boolean)=>!prev)
-    props.setAddAccountToggle((prev:boolean)=>!prev)
+    // console.log(formValues);
+    try {
+      
+      const response = await axios.post(
+        `${import.meta.env.VITE_server_url}/api/add-account`,
+        formValues, {
+          withCredentials: true, // Ensure cookies are sent with the request
+        }
+      );
+      console.log(response);
+      props.refresh((prev:boolean)=>!prev)
+      props.setAddAccountToggle((prev:boolean)=>!prev)
+    } catch (error) {
+      alert(error)
+    }
+
   };
 
   useEffect(() => {
@@ -87,7 +93,7 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
           <CardContent>
             <div className="w-full grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name_tag">Name Tag</Label>
+                <Label htmlFor="name_tag">Full Name </Label>
                 <Input className="text-white"
                   id="name_tag"
                   placeholder="enter name tag to identify your account"
@@ -103,15 +109,16 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="key">Key</Label>
+                <Label htmlFor="key">API Key</Label>
                 <Input className="text-white" 
                   id="key"
                   placeholder="enter your key"
                   onChange={handleChange}
                 />
+                <p>When you create an app on upstox please enter "https://api.oidelta.com/auth" as redirect url.</p>
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="secret">Secret</Label>
+                <Label htmlFor="secret">API Secret</Label>
                 <Input className="text-white" 
                   id="secret"
                   placeholder="enter your secret"
@@ -141,7 +148,7 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
               </div>
 
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="broker_id">Broker ID</Label>
+                <Label htmlFor="broker_id">Your Client ID</Label>
                 <Input className="text-white" 
                   id="broker_id"
                   placeholder="enter your Broker ID"
@@ -190,7 +197,7 @@ export default function AddAccount(props:{refresh:React.Dispatch<React.SetStateA
           <CardFooter className="flex justify-around">
             <Button onClick={() => props.setAddAccountToggle((prev:boolean)=>!prev)}>Back</Button>
             <Button type="submit">Submit</Button>
-
+              
           </CardFooter>
           </div>
         </form>

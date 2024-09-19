@@ -91,7 +91,7 @@ export default function Positions() {
             <div><Button onClick={()=>{
               slToCostHandeler(v.instrument_token,v.buy_price)
             }}>Sl 2 Cost</Button></div>
-            <div>{v.sell_price ? v.sell_price : "sell price"}</div>
+            <div>{v.buy_price ? v.buy_price : "---"}</div>
 
             {v.quantity!=0?<Button onClick={() => {
               //call square off single api

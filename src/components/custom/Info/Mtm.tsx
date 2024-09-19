@@ -11,7 +11,7 @@ export default function Mtm() {
 
       <div className='flex justify-center gap-16 border-[1px] rounded-xl border-white py-2 px-5  w-fit '>
       <div className=' bg-gray-600 w-40 rounded-md px-2 py-1'>
-        <div><strong>OverAll SL:</strong> {mtmSl} </div>
+        <div><strong>P&L SL:</strong> {mtmSl} </div>
         <input  
           className='text-black rounded-sm pl-1 w-24'
           type="number"
@@ -27,9 +27,9 @@ export default function Mtm() {
           }}
         />
       </div>
-      <div className='pt-3'><strong>OverAll PnL:</strong> {mtm} </div>
+      <div className='pt-3'><strong>P&L:</strong> {mtm} </div>
       <div className=' bg-gray-600 w-40 rounded-md px-2 py-1'>  
-        <div><strong>OverAll Target:</strong> {mtmTarget} </div>
+        <div><strong>P&L Target:</strong> {mtmTarget} </div>
         <input
           className='text-black rounded-sm pl-1 w-24'
           type="number"

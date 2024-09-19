@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CoustomSelect from "../CoustomSelect";
 import useOrderParameterStore from "@/store/orderParameterStore";
 import useSymbolStore from "@/store/symbolStore";
@@ -8,6 +8,9 @@ import useOptionsDataStore from "@/store/optionsDataStore";
 import useStaticStore from "@/store/staticStore";
 import useLtpStore from "@/store/ltpStore";
 import { Combobox } from "../CoustomComboBox";
+import useSlStore from "@/store/slStore";
+import axios from "axios";
+import useAccountStore from "@/store/accountStore";
 
 const extractExpiryAndStrike = (
   input: string
@@ -34,12 +37,22 @@ function Inputs() {
   const {expiries, strikes ,updateExpiries, updateStrikes} = useStaticStore((state) => ({updateExpiries:state.updateExpiries, expiries:state.expiries, updateStrikes:state.updateStrikes, strikes:state.strikes}));
 
   const [updateCallLTP, updatePutLTP] = useLtpStore((state) => [state.updateCallLTP, state.updatePutLTP]);
+  const {master}:{master:any} = useAccountStore((state) => ({master: state.master}));
   interface Quantity {
     value: string;
     label: string;
   }
+
+  const {preferedSl, preferedTarget, updatePreferedSl, updatePreferedTarget} = useSlStore((state) => ({...state}));
+  const [preferedSlState, setPreferedSlState] = useState(preferedSl);
+  const [preferedTargetState, setPreferedTargetState] = useState(preferedTarget);
   
   const [quantityList, setQuantityList] = useState<Quantity[]>([]);
+
+  useEffect(() => {
+    setPreferedSlState(preferedSl);
+    setPreferedTargetState(preferedTarget);
+  },[preferedSl, preferedTarget])
   function getQuantityArray(lotSize: number, numberOfEntries: number = 4) {
     const quantity = [];
   
@@ -53,6 +66,8 @@ function Inputs() {
   
     return quantity;
   }
+
+
   
   return (
     <>
@@ -139,15 +154,29 @@ function Inputs() {
         {/* <div className="flex-col">
           <Label>Market Protection</Label>
           <Input type="number" placeholder="10%" />
-        </div>
-        <div className="flex-col">
-          <Label>Prefered SL Pts</Label>
-          <Input type="number" placeholder="Prefered SL Pts" />
-        </div>
-        <div className="flex-col">
-          <Label>Prefered Target Pts</Label>
-          <Input type="number" placeholder="Prefered Target Pts" />
         </div> */}
+        <div className="flex-col">
+          <Label>Prefered SL Pts: {preferedSl}</Label>
+          <Input type="number" value={preferedSlState} placeholder="Prefered SL Pts" 
+          onChange={(e) => {
+            setPreferedSlState(Number(e.target.value));
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              //api call
+              updatePreferedSl(preferedSlState);
+              axios.post(`${import.meta.env.VITE_server_url}/api/update-prefrences-sl`, { account_id: master.u_id, stoploss: preferedSlState },{withCredentials: true,})
+            }
+          }}/>
+        </div>
+        <div className="flex-col">
+          <Label>Prefered Target Pts: {preferedTarget}</Label>
+          <Input type="number" value={preferedTargetState} onChange={(e) => {setPreferedTargetState(Number(e.target.value))}} onKeyDown={(e) => {if (e.key === "Enter") {
+            console.log("preferedTarget",master);
+            axios.post(`${import.meta.env.VITE_server_url}/api/update-prefrences-target`, { account_id: master.u_id, target: preferedTargetState },{withCredentials: true,})
+            updatePreferedTarget(preferedTargetState)
+            }}} placeholder="Prefered Target Pts" />
+        </div>
       </div>
       <div className="flex  text-white justify-between items-center gap-1">
       <CoustomSelect
