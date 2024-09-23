@@ -104,6 +104,14 @@ export default function Trade() {
           updatePreferedSl(resp.data.stoploss)
           updatePreferedTarget(resp.data.target)
         })
+
+        axios.post(`${import.meta.env.VITE_server_url}/api/get-orders`, {
+          account_id: id,
+          // account_type: type,
+        }, {
+          withCredentials: true, // Ensure cookies are sent with the request
+        });
+
       // some await functions
       if (id) {
         // For example, fetch some data with the accountId

@@ -32,8 +32,8 @@ export default function OrderBook(props: any) {
         <div>Type</div>
         <div>Side</div>
         <div>Qty</div>
-        <div>OrderPrice</div>
-        <div>Traded Price</div>
+        <div>Order Price</div>
+        <div>Avg Price</div>
         <div>Triggered Price</div>
         <div>Status</div>
         <div>Time/Date</div>
@@ -55,7 +55,7 @@ export default function OrderBook(props: any) {
             <div>{v.transaction_type ? v.transaction_type : "---"}</div>
             <div>{v.quantity ? v.quantity : "Qty"}</div>
             <div>{v.price ? v.price : "---"}</div>
-            <div>{v.traded_price ? v.traded_price : "---"}</div>
+            <div>{v.average_price ? v.average_price : "---"}</div>
             <div>
               {v.trigger_price ? v.trigger_price : "---"}
             </div>
@@ -69,14 +69,14 @@ export default function OrderBook(props: any) {
             <div className="break-words">
               {v.status_message ? v.status_message : "---"}
             </div>
-            <div>{(v.status==="open"||v.status==="pending")?<div className="flex gap-2"><Button onClick={() => {
+            <div>{(v.status==="open"||v.status==="pending"||v.status==="after market order req received"|| v.status==="modify after market order req received")?<div className="flex gap-2"><Button onClick={() => {
               // console.log(v.order_id);
               axios.post(`${import.meta.env.VITE_server_url}/api/cancel-order`, { order_id: v.order_id, master_u_id: master.u_id}, {
                 withCredentials: true, // Ensure cookies are sent with the request
               })
-            }}>Cancel</Button> <Button onClick={() => {
-              
-            }}>Modify</Button></div>:("---")}</div>
+            }}>Cancel</Button> 
+            {/* <Button onClick={() => {}}>Modify</Button> */}
+            </div>:("---")}</div>
           </div>
           // <div key={i}>
           //   {v.tradingsymbol}
