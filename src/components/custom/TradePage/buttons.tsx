@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 // import React from 'react'
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useOrderParameterStore from "@/store/orderParameterStore";
 import useSymbolStore from "@/store/symbolStore";
@@ -112,13 +112,14 @@ export default function Buttons(props: any) {
     position.map((p: any) => {
       totalBuyPrice += p.buy_price;
     });
-    console.log(totalBuyPrice);
+    console.log("totalBuyPrice", totalBuyPrice);
     updateMtmSl(totalBuyPrice);
   };
 
   return (
     <div className="grid grid-cols-3 m-1">
       <div className="flex-col flex  items-start">
+        <ToastContainer/>
         <Button
           onClick={() => {
             placeOrder("SELL", "call");
